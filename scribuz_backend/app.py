@@ -149,7 +149,15 @@ def health():
         'creator_dir': CREATOR_DIR,
         'admin_dir': ADMIN_DIR
     })
-
+@app.route('/api/debug')
+def debug():
+    import os
+    return jsonify({
+        'fan_dir': FAN_DIR,
+        'fan_exists': os.path.exists(FAN_DIR),
+        'base': BASE,
+        'app_contents': os.listdir('/app') if os.path.exists('/app') else 'no /app',
+    })
 # ══════════════════════════════════════════════════════════════════════════════
 # CREATORS — PUBLIC
 # ══════════════════════════════════════════════════════════════════════════════
