@@ -6,10 +6,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BASE        = '/app'
-FAN_DIR     = '/app/scribuz_fan'
-CREATOR_DIR = '/app/scribuz_creator'
-ADMIN_DIR   = '/app/scribuz_admin'
+BASE        = os.path.dirname(os.path.abspath(__file__))
+FAN_DIR     = os.path.join(BASE, 'scribuz_fan')
+CREATOR_DIR = os.path.join(BASE, 'scribuz_creator')
+ADMIN_DIR   = os.path.join(BASE, 'scribuz_admin')
 
 app = Flask(__name__)
 CORS(app, origins='*')

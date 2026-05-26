@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Wallet — ScriBuz</title>
+  <link rel="stylesheet" href="/fan/style.css">
+  <style>
+    .wallet-wrap{max-width:760px;margin:0 auto;padding:24px 1.5rem 60px}
+    .wallet-card{background:linear-gradient(135deg,#1A1A18 0%,#2a2a26 100%);border-radius:20px;padding:32px;position:relative;overflow:hidden;margin-bottom:24px;color:#fff}
+    .wc-glow{position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(216,90,48,.3),transparent 70%);pointer-events:none}
+    .wc-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:8px}
+    .wc-balance{font-size:3rem;font-weight:700;letter-spacing:-2px;margin-bottom:4px}
+    .wc-balance span{font-size:1.5rem;font-weight:400;color:rgba(255,255,255,.5);margin-right:4px}
+    .wc-sub{font-size:13px;color:rgba(255,255,255,.45);margin-bottom:24px}
+    .wc-pills{display:flex;gap:10px;flex-wrap:wrap}
+    .wc-pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 16px;min-width:100px}
+    .wc-pill-val{font-size:1.1rem;font-weight:700;color:var(--or2,#F0997B)}
+    .wc-pill-label{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+    .cashback-banner{background:linear-gradient(135deg,#EAF3DE,#d4edba);border:1.5px solid #97C459;border-radius:var(--rl,14px);padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px}
+    .cb-icon{font-size:2rem;flex-shrink:0}
+    .cb-title{font-size:14px;font-weight:700;color:#27500A;margin-bottom:3px}
+    .cb-desc{font-size:12px;color:#3d6b14;line-height:1.5}
+    .tx-list{display:flex;flex-direction:column;gap:0}
+    .tx-row{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bd,#E5E4E0)}
+    .tx-row:last-child{border-bottom:none}
+    .tx-row:hover{background:var(--bg3,#F3F2EF)}
+    .tx-left{display:flex;align-items:center;gap:12px}
+    .tx-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+    .tx-icon.credit{background:var(--gn2,#EAF3DE)}
+    .tx-icon.debit{background:var(--rd2,#FCEBEB)}
+    .tx-name{font-size:13px;font-weight:600;color:var(--tx,#1A1A18);margin-bottom:2px}
+    .tx-date{font-size:11px;color:var(--tx3,#9C9B96)}
+    .tx-amount{font-size:14px;font-weight:700}
+    .tx-amount.credit{color:var(--gn,#27500A)}
+    .tx-amount.debit{color:var(--rd,#A32D2D)}
+    .gift-card{background:#fff;border:1.5px solid var(--bd,#E5E4E0);border-radius:var(--rl,14px);padding:20px;margin-top:16px}
+    .gift-card h3{font-size:14px;font-weight:700;margin-bottom:12px}
+    .gc-input{display:flex;gap:8px}
+    .gc-inp{flex:1;padding:10px 13px;border-radius:var(--r,10px);border:1.5px solid var(--bd,#E5E4E0);font-size:13px;font-family:inherit;outline:none;transition:.2s}
+    .gc-inp:focus{border-color:#D85A30}
+    .gc-btn{padding:10px 18px;background:#D85A30;color:#fff;border:none;border-radius:var(--r,10px);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:.18s}
+    .gc-btn:hover{background:#993C1D}
+  </style>
+</head>
+<body>
+
+<nav style="background:#1A1A18;padding:0 2rem;position:sticky;top:0;z-index:100">
+  <div style="max-width:760px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px">
+    <a href="/fan/index.html" style="font-size:18px;font-weight:700;color:#fff;text-decoration:none">Scri<span style="background:linear-gradient(135deg,#D85A30,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Buz</span></a>
+    <a href="/fan/account.html" style="font-size:13px;color:rgba(255,255,255,.5);font-weight:500;text-decoration:none">← My account</a>
+  </div>
+</nav>
+
+<div class="wallet-wrap">
+
+  <!-- WALLET CARD -->
+  <div class="wallet-card">
+    <div class="wc-glow"></div>
+    <div class="wc-label">ScriBuz Wallet</div>
+    <div class="wc-balance" id="wallet-balance"><span>₹</span>—</div>
+    <div class="wc-sub" id="wallet-sub">Your cashback balance</div>
+    <div class="wc-pills">
+      <div class="wc-pill">
+        <div class="wc-pill-val" id="pill-earned">₹0</div>
+        <div class="wc-pill-label">Total earned</div>
+      </div>
+      <div class="wc-pill">
+        <div class="wc-pill-val" id="pill-bookings">0</div>
+        <div class="wc-pill-label">Bookings</div>
+      </div>
+      <div class="wc-pill">
+        <div class="wc-pill-val" id="pill-next">₹0</div>
+        <div class="wc-pill-label">Next cashback</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASHBACK BANNER -->
+  <div class="cashback-banner">
+    <div class="cb-icon">💸</div>
+    <div>
+      <div class="cb-title">2% cashback on every booking</div>
+      <div class="cb-desc">Every time you complete a booking on ScriBuz, 2% of the value is credited to your wallet automatically. Use your balance on your next experience.</div>
+    </div>
+  </div>
+
+  <!-- TRANSACTIONS -->
+  <div class="card">
+    <div class="card-head"><h3>📜 Transaction history</h3></div>
+    <div class="tx-list" id="tx-list">
+      <div class="empty" style="padding:32px">Loading transactions…</div>
+    </div>
+  </div>
+
+  <!-- GIFT CARD REDEEM -->
+  <div class="gift-card">
+    <h3>🎁 Redeem a gift card</h3>
+    <p style="font-size:12px;color:var(--tx2,#5C5B57);margin-bottom:12px">Enter your ScriBuz gift card code to add credit to your wallet</p>
+    <div class="gc-input">
+      <input class="gc-inp" id="gift-code" placeholder="e.g. GIFT-XXXX-XXXX" maxlength="20">
+      <button class="gc-btn" onclick="redeemGift()">Redeem →</button>
+    </div>
+    <div id="gift-msg" style="font-size:12px;margin-top:8px;display:none"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" style="position:fixed;bottom:24px;right:24px;background:#1A1A18;color:#fff;padding:11px 18px;border-radius:9px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 8px 28px rgba(0,0,0,.2);display:none"></div>
+
+<script>
+const API = 'http://127.0.0.1:5000';
+const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
+
+function getSession() {
+  const token = localStorage.getItem('sc_token');
+  const user  = localStorage.getItem('sc_user');
+  if (!token || !user) return null;
+  try { return { token, user: JSON.parse(user) }; } catch { return null; }
+}
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent=msg; t.style.display='block';
+  setTimeout(()=>t.style.display='none',3000);
+}
+
+async function loadWallet() {
+  const s = getSession();
+  if (!s) { window.location.href='/fan/login.html'; return; }
+
+  const res = await fetch(`${API}/api/fan/bookings`, {
+    headers: {'Authorization':`Bearer ${s.token}`}
+  }).then(r=>r.json()).catch(()=>({bookings:[]}));
+
+  const bks = res.bookings || [];
+  const completed = bks.filter(b => b.status === 'completed');
+  const totalSpent = completed.reduce((sum,b) => sum + (b.fan_total||b.amount||0), 0);
+  const cashback   = Math.round(totalSpent * 0.02);
+
+  // Simulate next booking cashback from pending/confirmed
+  const nextBk  = bks.find(b=>b.status==='confirmed');
+  const nextCb   = nextBk ? Math.round((nextBk.fan_total||nextBk.amount||0)*0.02) : 0;
+
+  document.getElementById('wallet-balance').innerHTML = `<span>₹</span>${cashback.toLocaleString('en-IN')}`;
+  document.getElementById('wallet-sub').textContent   = cashback > 0
+    ? 'Available to use on your next booking'
+    : 'Complete a booking to start earning cashback';
+  document.getElementById('pill-earned').textContent   = fmt(cashback);
+  document.getElementById('pill-bookings').textContent = completed.length;
+  document.getElementById('pill-next').textContent     = fmt(nextCb);
+
+  // Build transaction list
+  const txList = document.getElementById('tx-list');
+  if (!bks.length) {
+    txList.innerHTML = '<div class="empty" style="padding:32px">No transactions yet. Book an experience to get started!</div>'; return;
+  }
+
+  const rows = bks.map(b => {
+    const cb       = b.status==='completed' ? Math.round((b.fan_total||b.amount||0)*0.02) : 0;
+    const dt       = new Date(b.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+    const isCredit = b.status === 'completed';
+    return `<div class="tx-row">
+      <div class="tx-left">
+        <div class="tx-icon ${isCredit?'credit':'debit'}">${isCredit?'💚':'📋'}</div>
+        <div>
+          <div class="tx-name">${b.event_type||'Experience'} · ${b.creator_name||'Creator'}</div>
+          <div class="tx-date">${dt} · ${b.status}</div>
+        </div>
+      </div>
+      <div>
+        <div class="tx-amount debit">−${fmt(b.fan_total||b.amount||0)}</div>
+        ${isCredit ? `<div style="font-size:11px;color:var(--gn,#27500A);font-weight:600;text-align:right">+${fmt(cb)} cashback</div>` : ''}
+      </div>
+    </div>`;
+  });
+  txList.innerHTML = rows.join('');
+}
+
+function redeemGift() {
+  const code = document.getElementById('gift-code').value.trim().toUpperCase();
+  const msg  = document.getElementById('gift-msg');
+  if (!code) { msg.style.display='block'; msg.textContent='Enter a gift card code.'; msg.style.color='#A32D2D'; return; }
+  // Simulate — in production this would hit /api/fan/redeem-gift
+  msg.style.display='block';
+  if (code.startsWith('GIFT-')) {
+    msg.textContent='🎉 ₹500 added to your wallet! (Demo mode)';
+    msg.style.color='#27500A';
+    document.getElementById('gift-code').value='';
+  } else {
+    msg.textContent='Invalid or already used gift card code.';
+    msg.style.color='#A32D2D';
+  }
+  setTimeout(()=>msg.style.display='none',4000);
+}
+
+loadWallet();
+</script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Account — ScriBuz</title>
+  <link rel="stylesheet" href="/fan/style.css">
+  <style>
+    .feature-links{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+    .feature-link{display:flex;align-items:center;gap:14px;padding:14px 16px;background:#fff;border:1.5px solid var(--border,#E5E4E0);border-radius:12px;text-decoration:none;color:var(--text,#1A1A18);font-weight:600;font-size:14px;transition:.18s}
+    .feature-link:hover{border-color:#D85A30;background:#FAECE7;transform:translateX(2px)}
+    .fl-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .fl-icon.orange{background:#FAECE7}
+    .fl-icon.green{background:#EAF3DE}
+    .fl-icon.dark{background:#F0EFE9}
+    .fl-desc{font-size:12px;color:var(--text2,#5C5B57);font-weight:400;margin-top:1px}
+    .fl-arrow{margin-left:auto;color:var(--text3,#9C9B96);font-size:18px}
+
+    /* Cancellation policy notes inline in booking card */
+    .cancel-policy-note{font-size:11px;padding:7px 10px;border-radius:7px;margin:6px 0 2px;line-height:1.5}
+    .cancel-policy-note.pending{background:#FFF8E1;border:1px solid #FFE082;color:#7B5C00}
+    .cancel-policy-note.locked{background:#FFF3E0;border:1px solid #FFCC80;color:#7B3900}
+    .cancel-policy-note.locked a{color:#D85A30;font-weight:600}
+
+    /* Ref IDs line */
+    .bi-ref{font-size:11px;color:var(--text3,#9C9B96);margin:3px 0;font-family:monospace;letter-spacing:.02em}
+    .bi-ref strong{color:var(--text2,#5C5B57)}
+  </style>
+</head>
+<body onload="initAccount()">
+<nav>
+  <div class="nav-inner">
+    <a href="/fan/index.html" class="logo"><span class="scri">Scri</span><span class="buz">Buz</span></a>
+    <div class="nav-links">
+      <a href="/fan/browse.html" class="nav-link">Browse Creators</a>
+    </div>
+    <div class="nav-actions" id="nav-actions"></div>
+  </div>
+</nav>
+
+<div class="dash-page">
+  <div class="dash-welcome">
+    <h1>Hey, <span id="welcome-name">—</span> 👋</h1>
+    <p>Manage your bookings, wallet, and fan perks.</p>
+  </div>
+
+  <div class="dash-grid">
+    <!-- LEFT -->
+    <div>
+      <div class="dash-card">
+        <div class="dc-header">
+          <h3>📋 My Bookings</h3>
+          <div class="btabs">
+            <button class="btab active" onclick="filterBks('all',this)">All</button>
+            <button class="btab" onclick="filterBks('pending',this)">Pending</button>
+            <button class="btab" onclick="filterBks('confirmed',this)">Confirmed</button>
+            <button class="btab" onclick="filterBks('completed',this)">Completed</button>
+          </div>
+        </div>
+
+        <!-- Cancellation policy notice -->
+        <div style="margin:0 0 4px;padding:10px 16px;background:#FFF8E1;border-bottom:1px solid #FFE082;font-size:12px;color:#7B5C00;line-height:1.6">
+          📋 <strong>Cancellation Policy:</strong> You may cancel a booking <strong>only before the creator accepts</strong>. Once a creator confirms your booking, cancellations are not permitted. If a creator cancels, ScriBuz will process your full refund.
+        </div>
+
+        <div id="bookings-list"><div class="empty-state"><div class="spinner"></div></div></div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dc-header"><h3>❤️ My Wishlist</h3></div>
+        <div class="wl-grid" id="wl-grid"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+
+      <!-- FEATURE LINKS -->
+      <div class="dash-card" style="margin-bottom:20px">
+        <div class="dc-header"><h3>✨ Your ScriBuz</h3></div>
+        <div style="padding:16px">
+          <div class="feature-links">
+            <a href="/fan/wallet.html" class="feature-link">
+              <div class="fl-icon orange">💰</div>
+              <div>
+                <div>ScriBuz Wallet</div>
+                <div class="fl-desc">2% cashback on every booking · Redeem gift cards</div>
+              </div>
+              <span class="fl-arrow">›</span>
+            </a>
+            <a href="/fan/vault.html" class="feature-link">
+              <div class="fl-icon dark">🔒</div>
+              <div>
+                <div>Memory Vault</div>
+                <div class="fl-desc">Private photo albums from your experiences</div>
+              </div>
+              <span class="fl-arrow">›</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- REFERRAL -->
+      <div class="dash-card" style="margin-bottom:20px">
+        <div class="dc-header"><h3>🎁 Invite &amp; Earn</h3></div>
+        <div style="padding:20px">
+          <div class="ref-box">
+            <p style="font-size:13px;color:var(--text2);margin-bottom:8px">Share your code. Earn <strong>₹500</strong> for every friend who books!</p>
+            <div class="ref-code" id="ref-code" onclick="copyRef()">LOADING…</div>
+            <p style="font-size:12px;color:var(--text3);text-align:center;margin-bottom:12px">Total referrals: <strong id="ref-count">0</strong></p>
+            <button class="btn btn-primary btn-full" onclick="copyRefLink()">📋 Copy Invite Link</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS -->
+      <div class="dash-card">
+        <div class="dc-header"><h3>🚀 Quick Actions</h3></div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+          <a href="/fan/browse.html" class="btn btn-primary">Browse Creators →</a>
+          <a href="/creator/auth.html" class="btn btn-outline" style="text-align:center">Are you a creator? Sign up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT MODAL -->
+<div class="modal-overlay" id="chat-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeChat()">×</button>
+    <h3>💬 Chat with Creator</h3>
+    <div class="chat-msgs" id="chat-msgs"><div class="empty-state" style="padding:16px">No messages yet.</div></div>
+    <div class="chat-row">
+      <input class="chat-inp" id="chat-inp" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="review-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeReview()">×</button>
+    <h3>⭐ Rate Your Experience</h3>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:8px">How was the experience overall?</p>
+    <div class="stars">
+      <button onclick="setStar(1)">⭐</button><button onclick="setStar(2)">⭐</button>
+      <button onclick="setStar(3)">⭐</button><button onclick="setStar(4)">⭐</button>
+      <button onclick="setStar(5)">⭐</button>
+    </div>
+    <textarea class="review-ta" id="review-comment" placeholder="Tell us what made it special… (optional)"></textarea>
+    <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="submitReview()">Submit Review</button>
+  </div>
+</div>
+
+<!-- RESCHEDULE MODAL -->
+<div class="modal-overlay" id="resched-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeResched()">×</button>
+    <h3>📅 Request Reschedule</h3>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px">Pick a new preferred date. The creator will accept or decline.</p>
+    <div class="fg"><label>New Date</label><input type="date" id="resched-date"></div>
+    <button class="btn btn-primary btn-full" onclick="submitResched()">Send Reschedule Request</button>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="/fan/script.js"></script>
+</body>
+</html>

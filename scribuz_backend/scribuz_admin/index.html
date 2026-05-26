@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ScriBuz Admin</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f0d;color:#e8e7e3;line-height:1.6}
+    a{text-decoration:none;color:inherit}
+    :root{
+      --or:#D85A30;--or2:#F0997B;
+      --tx:#e8e7e3;--tx2:#9c9b96;--tx3:#5c5b57;
+      --bd:rgba(255,255,255,.1);--bg:rgba(255,255,255,.05);--bg2:rgba(255,255,255,.08);
+      --gn:#97C459;--gn2:rgba(151,196,89,.15);
+      --rd:#F87171;--rd2:rgba(248,113,113,.15);
+      --bl:#A5B4FC;--bl2:rgba(165,180,252,.15);
+      --yw:#F59E0B;--yw2:rgba(245,158,11,.15);
+      --r:10px;--rl:14px;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+    nav{background:rgba(0,0,0,.4);border-bottom:1px solid var(--bd);padding:0 2rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+    .nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px}
+    .nav-logo{font-size:18px;font-weight:700;letter-spacing:-.5px}
+    .nav-logo span{color:var(--or2)}
+    .nav-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(216,90,48,.2);color:var(--or2);border:1px solid rgba(216,90,48,.3);margin-left:8px}
+    .nav-right{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--tx2)}
+
+    .tabs-bar{background:rgba(0,0,0,.3);border-bottom:1px solid var(--bd);padding:0 2rem;position:sticky;top:56px;z-index:99}
+    .tabs-inner{max-width:1400px;margin:0 auto;display:flex;gap:2px;overflow-x:auto}
+    .atab{padding:12px 18px;font-size:13px;font-weight:600;color:var(--tx3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:.15s;font-family:inherit}
+    .atab:hover{color:var(--tx2)}
+    .atab.active{color:var(--or2);border-bottom-color:var(--or)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    .wrap{max-width:1400px;margin:0 auto;padding:24px 2rem 60px}
+    .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+    .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+    .two-col{display:grid;grid-template-columns:1fr 380px;gap:16px}
+
+    .scard{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);padding:20px;position:relative;overflow:hidden}
+    .scard-icon{font-size:1.6rem;margin-bottom:10px}
+    .scard-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);margin-bottom:6px}
+    .scard-val{font-size:2rem;font-weight:700;letter-spacing:-1px;line-height:1}
+    .scard-val.or{color:var(--or2)}
+    .scard-val.gn{color:var(--gn)}
+    .scard-val.bl{color:var(--bl)}
+    .scard-val.rd{color:var(--rd)}
+    .scard-sub{font-size:11px;color:var(--tx3);margin-top:5px}
+    .scard-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--or)}
+    .scard-bar.gn{background:var(--gn)}
+    .scard-bar.bl{background:var(--bl)}
+    .scard-bar.rd{background:var(--rd)}
+
+    .card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+    .card-head{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .card-head h3{font-size:14px;font-weight:700;color:var(--tx)}
+    .card-head-right{display:flex;align-items:center;gap:8px}
+
+    .app-item{padding:18px;border-bottom:1px solid var(--bd);animation:fadeUp .3s ease}
+    .app-item:last-child{border-bottom:none}
+    .app-item:hover{background:var(--bg2)}
+    .app-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+    .app-name{font-size:15px;font-weight:700;color:var(--tx)}
+    .app-meta{font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.7}
+    .app-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .app-bio{font-size:12px;color:var(--tx2);background:var(--bg2);border-radius:8px;padding:8px 12px;margin-bottom:10px;border-left:3px solid var(--bd);font-style:italic;line-height:1.6}
+
+    .badge{display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600}
+    .badge-pending{background:var(--yw2);color:var(--yw)}
+    .badge-approved{background:var(--gn2);color:var(--gn)}
+    .badge-rejected{background:var(--rd2);color:var(--rd)}
+    .badge-paid{background:var(--gn2);color:var(--gn)}
+    .badge-unpaid{background:var(--bg2);color:var(--tx3)}
+    .badge-confirmed{background:var(--bl2);color:var(--bl)}
+    .badge-completed{background:var(--gn2);color:var(--gn)}
+    .badge-cancelled{background:var(--rd2);color:var(--rd)}
+    .badge-refunded{background:var(--bl2);color:var(--bl)}
+    .badge-refund_required{background:rgba(245,158,11,.2);color:var(--yw);border:1px solid rgba(245,158,11,.4)}
+    .badge-none{background:var(--bg2);color:var(--tx3)}
+
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:.15s;font-family:inherit}
+    .btn-approve{background:var(--gn2);border:1px solid var(--gn);color:var(--gn)}
+    .btn-approve:hover{background:var(--gn);color:#0f0f0d}
+    .btn-reject{background:var(--rd2);border:1px solid var(--rd);color:var(--rd)}
+    .btn-reject:hover{background:var(--rd);color:#fff}
+    .btn-refund{background:rgba(165,180,252,.15);border:1px solid var(--bl);color:var(--bl)}
+    .btn-refund:hover{background:var(--bl);color:#0f0f0d}
+    .btn-view{background:var(--bg2);border:1px solid var(--bd);color:var(--tx2)}
+    .btn-view:hover{border-color:var(--or2);color:var(--or2)}
+    .btn-primary{background:var(--or);color:#fff;border:1px solid var(--or)}
+    .btn-primary:hover{background:#993C1D}
+    .btn-sm{padding:5px 10px;font-size:11px}
+
+    /* Refund section highlight */
+    .refund-row{background:rgba(165,180,252,.06);border-left:3px solid var(--bl)}
+
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);border-bottom:1px solid var(--bd)}
+    td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--tx2);vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:var(--bg2)}
+    td strong{color:var(--tx);font-weight:600}
+
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:999;padding:16px}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#1a1a18;border:1px solid var(--bd);border-radius:var(--rl);width:100%;max-width:440px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+    .modal-box h3{font-size:1.1rem;font-weight:700;margin-bottom:6px}
+    .modal-box p{font-size:13px;color:var(--tx2);margin-bottom:20px;line-height:1.6}
+    .mfg{margin-bottom:14px}
+    .mfg label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);margin-bottom:5px}
+    .mfg input,.mfg textarea{width:100%;padding:10px 13px;border-radius:var(--r);border:1px solid var(--bd);background:rgba(255,255,255,.06);color:var(--tx);font-size:13px;font-family:inherit;outline:none;transition:.2s}
+    .mfg input:focus,.mfg textarea:focus{border-color:var(--or2)}
+    .mfg textarea{resize:vertical;min-height:70px}
+    .modal-actions{display:flex;gap:8px;margin-top:4px}
+
+    .empty{text-align:center;padding:48px;color:var(--tx3);font-size:14px}
+    .spinner{width:28px;height:28px;border:2.5px solid var(--bd);border-top-color:var(--or);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 10px}
+
+    .toast{position:fixed;bottom:24px;right:24px;background:#1a1a18;color:var(--tx);padding:11px 18px;border-radius:9px;font-size:13px;font-weight:600;z-index:9999;border:1px solid var(--bd);box-shadow:0 8px 28px rgba(0,0,0,.4);display:none;animation:fadeUp .3s ease}
+    .toast.err{background:#3a1010;border-color:var(--rd);color:var(--rd)}
+    .toast.ok{background:#0a1f05;border-color:var(--gn);color:var(--gn)}
+
+    /* Refunds tab alert banner */
+    .refund-alert{background:rgba(165,180,252,.1);border:1px solid rgba(165,180,252,.3);border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:13px;color:var(--bl);line-height:1.6}
+    .refund-alert strong{color:#fff}
+
+    @media(max-width:900px){.grid-4,.grid-5{grid-template-columns:1fr 1fr}.two-col{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div style="display:flex;align-items:center">
+      <div class="nav-logo">Scri<span>Buz</span></div>
+      <span class="nav-badge">Admin</span>
+    </div>
+    <div class="nav-right">
+      <span id="refund-alert-nav" style="font-size:12px;color:var(--rd);font-weight:700;display:none">⚠️ Refunds pending</span>
+      🔒 Admin Panel
+    </div>
+  </div>
+</nav>
+
+<div class="tabs-bar">
+  <div class="tabs-inner">
+    <button class="atab active" onclick="switchTab('applications',this)">📝 Applications</button>
+    <button class="atab" onclick="switchTab('creators',this)">🎬 Creators</button>
+    <button class="atab" onclick="switchTab('bookings',this)">📋 Bookings</button>
+    <button class="atab" onclick="switchTab('fans',this)">👥 Fans</button>
+    <button class="atab" onclick="switchTab('payments',this)">💳 Payments</button>
+    <button class="atab" onclick="switchTab('payouts',this)">💸 Payouts</button>
+    <button class="atab" onclick="switchTab('refunds',this)" id="refunds-tab">↩️ Refunds</button>
+    <button class="atab" onclick="switchTab('overview',this)">📊 Overview</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ═══ APPLICATIONS ═══ -->
+  <div id="tab-applications" class="tab-content active">
+    <div class="card">
+      <div class="card-head">
+        <h3>📝 Creator Applications</h3>
+        <div class="card-head-right">
+          <select id="app-filter" onchange="loadApplications()" style="background:var(--bg2);border:1px solid var(--bd);color:var(--tx);padding:5px 10px;border-radius:8px;font-size:12px;font-family:inherit">
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="">All</option>
+          </select>
+          <button class="btn btn-view" onclick="loadApplications()">↻ Refresh</button>
+        </div>
+      </div>
+      <div id="applications-list"><div class="empty"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ CREATORS ═══ -->
+  <div id="tab-creators" class="tab-content">
+    <div class="card">
+      <div class="card-head">
+        <h3>🎬 Active Creators</h3>
+        <button class="btn btn-view" onclick="loadCreators()">↻ Refresh</button>
+      </div>
+      <div id="creators-list"><div class="empty"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ BOOKINGS ═══ -->
+  <div id="tab-bookings" class="tab-content">
+    <div class="grid-4" id="booking-stats" style="display:none">
+      <div class="scard"><div class="scard-icon">📋</div><div class="scard-label">Total bookings</div><div class="scard-val or" id="bs-total">—</div><div class="scard-bar"></div></div>
+      <div class="scard"><div class="scard-icon">⏳</div><div class="scard-label">Pending</div><div class="scard-val or" id="bs-pending">—</div><div class="scard-bar"></div></div>
+      <div class="scard"><div class="scard-icon">💰</div><div class="scard-label">Total revenue</div><div class="scard-val gn" id="bs-revenue">—</div><div class="scard-bar gn"></div></div>
+      <div class="scard"><div class="scard-icon">↩️</div><div class="scard-label">Refunds pending</div><div class="scard-val rd" id="bs-refunds">—</div><div class="scard-bar rd"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h3>📋 All Bookings</h3>
+        <button class="btn btn-view" onclick="loadBookings()">↻ Refresh</button>
+      </div>
+      <div id="bookings-list"><div class="empty"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ FANS ═══ -->
+  <div id="tab-fans" class="tab-content">
+    <div class="card">
+      <div class="card-head">
+        <h3>👥 Registered Fans</h3>
+        <button class="btn btn-view" onclick="loadFans()">↻ Refresh</button>
+      </div>
+      <div id="fans-list"><div class="empty"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ PAYMENTS ═══ -->
+  <div id="tab-payments" class="tab-content">
+    <div class="grid-5" style="margin-bottom:16px">
+      <div class="scard"><div class="scard-icon">💳</div><div class="scard-label">Total collected</div><div class="scard-val gn" id="ps-collected">—</div><div class="scard-bar gn"></div></div>
+      <div class="scard"><div class="scard-icon">✂️</div><div class="scard-label">Platform revenue</div><div class="scard-val or" id="ps-platform">—</div><div class="scard-bar"></div></div>
+      <div class="scard"><div class="scard-icon">🎬</div><div class="scard-label">Creator payouts</div><div class="scard-val bl" id="ps-creator">—</div><div class="scard-bar bl"></div></div>
+      <div class="scard"><div class="scard-icon">⏳</div><div class="scard-label">Pending release</div><div class="scard-val or" id="ps-pending">—</div><div class="scard-bar"></div></div>
+      <div class="scard"><div class="scard-icon">↩️</div><div class="scard-label">Total refunded</div><div class="scard-val rd" id="ps-refunded">—</div><div class="scard-bar rd"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h3>💳 All Payments</h3>
+        <button class="btn btn-view" onclick="loadPayments()">↻ Refresh</button>
+      </div>
+      <div id="payments-list"><div class="empty"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ PAYOUTS ═══ -->
+  <div id="tab-payouts" class="tab-content">
+    <div class="card">
+      <div class="card-head">
+        <h3>💸 Payout Requests</h3>
+        <button class="btn btn-view" onclick="loadPayouts()">↻ Refresh</button>
+      </div>
+      <div id="payouts-list"><div class="empty"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ REFUNDS ═══ -->
+  <div id="tab-refunds" class="tab-content">
+    <div class="refund-alert">
+      <strong>Refund Centre</strong> — This tab shows all bookings that require a fan refund. Refunds are needed when: (1) a creator rejects/cancels a paid booking, (2) admin cancels a paid booking, or (3) fan cancelled before creator accepted and had already paid. Use the <strong>Issue Refund</strong> button to mark the refund as processed via Razorpay dashboard or manual UPI transfer.
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h3>↩️ Fan Refunds</h3>
+        <button class="btn btn-view" onclick="loadRefunds()">↻ Refresh</button>
+      </div>
+      <div id="refunds-list"><div class="empty"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ OVERVIEW ═══ -->
+  <div id="tab-overview" class="tab-content">
+    <div class="grid-4" id="overview-stats">
+      <div class="scard"><div class="scard-icon">🎬</div><div class="scard-label">Active creators</div><div class="scard-val or" id="ov-creators">—</div><div class="scard-bar"></div></div>
+      <div class="scard"><div class="scard-icon">👥</div><div class="scard-label">Total fans</div><div class="scard-val bl" id="ov-fans">—</div><div class="scard-bar bl"></div></div>
+      <div class="scard"><div class="scard-icon">📋</div><div class="scard-label">Total bookings</div><div class="scard-val or" id="ov-bookings">—</div><div class="scard-bar"></div></div>
+      <div class="scard"><div class="scard-icon">💰</div><div class="scard-label">ScriBuz revenue</div><div class="scard-val gn" id="ov-revenue">—</div><div class="scard-bar gn"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>📊 Platform overview</h3></div>
+      <div id="overview-detail" style="padding:20px"><div class="empty"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- APPROVE MODAL -->
+<div class="modal-overlay" id="approve-modal">
+  <div class="modal-box">
+    <h3>✅ Approve Creator</h3>
+    <p id="approve-desc">Approving this creator will create their account and allow them to log in immediately.</p>
+    <div class="mfg">
+      <label>Set password for creator</label>
+      <input type="text" id="approve-password" placeholder="Leave blank to use password from signup">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-view" style="flex:1" onclick="closeApproveModal()">Cancel</button>
+      <button class="btn btn-approve" style="flex:2" onclick="confirmApprove()">✅ Approve & activate →</button>
+    </div>
+  </div>
+</div>
+
+<!-- REFUND MODAL -->
+<div class="modal-overlay" id="refund-modal">
+  <div class="modal-box">
+    <h3>↩️ Issue Fan Refund</h3>
+    <p id="refund-desc">Mark this refund as issued. You must process the actual payment transfer via Razorpay dashboard or manual UPI.</p>
+    <div class="mfg">
+      <label>Refund reason (shown in records)</label>
+      <textarea id="refund-reason" placeholder="e.g. Creator cancelled the booking, full refund issued"></textarea>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:12px;margin-bottom:14px;font-size:12px;color:var(--tx2);line-height:1.7">
+      ⚠️ This action only records the refund in ScriBuz. Make sure you have already initiated the actual bank transfer or Razorpay refund before marking it here.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-view" style="flex:1" onclick="closeRefundModal()">Cancel</button>
+      <button class="btn btn-refund" style="flex:2" onclick="confirmRefund()">↩️ Mark as refunded →</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const SECRET = 'scribuz_admin_2026';
+const API    = 'http://127.0.0.1:5000';
+const fmt    = n => '₹' + Number(n||0).toLocaleString('en-IN');
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + type;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 4000);
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.atab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'applications') loadApplications();
+  if (name === 'creators')     loadCreators();
+  if (name === 'bookings')     loadBookings();
+  if (name === 'fans')         loadFans();
+  if (name === 'payments')     loadPayments();
+  if (name === 'payouts')      loadPayouts();
+  if (name === 'refunds')      loadRefunds();
+  if (name === 'overview')     loadOverview();
+}
+
+// ── APPLICATIONS ──────────────────────────────────────────────────────────────
+let pendingAppId = null, pendingAppName = '';
+
+async function loadApplications() {
+  const status = document.getElementById('app-filter').value;
+  const list   = document.getElementById('applications-list');
+  list.innerHTML = '<div class="empty"><div class="spinner"></div></div>';
+  const res = await fetch(`${API}/api/admin/applications?secret=${SECRET}&status=${status}`)
+    .then(r => r.json()).catch(() => ({ applications: [] }));
+  const apps = res.applications || [];
+  if (!apps.length) { list.innerHTML = `<div class="empty">No ${status||''} applications.</div>`; return; }
+  list.innerHTML = apps.map(a => `
+    <div class="app-item">
+      <div class="app-top">
+        <div>
+          <div class="app-name">${a.name}</div>
+          <span class="badge badge-${a.status||'pending'}">${a.status||'pending'}</span>
+        </div>
+        <div style="text-align:right;font-size:12px;color:var(--tx3)">${new Date(a.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+      </div>
+      <div class="app-meta">
+        📧 ${a.email} &nbsp;·&nbsp; 📱 ${a.phone||'—'} &nbsp;·&nbsp; 📂 ${a.category||'—'}<br>
+        📸 ${a.instagram||'—'} &nbsp;·&nbsp; 👥 ${a.followers||'—'} followers &nbsp;·&nbsp; 💰 ₹${(a.price_from||0).toLocaleString('en-IN')} starting price<br>
+        🏙 ${a.city||'Hyderabad'} &nbsp;·&nbsp; 🏠 Venue: ${a.has_venue?'Yes':'No'}
+        ${a.youtube?`&nbsp;·&nbsp; ▶️ <a href="${a.youtube}" target="_blank" style="color:var(--or2)">${a.youtube.substring(0,30)}…</a>`:''}
+      </div>
+      ${a.bio?`<div class="app-bio">"${a.bio}"</div>`:''}
+      ${a.experience?`<div class="app-bio">🎯 ${a.experience}</div>`:''}
+      ${(a.status||'pending')==='pending'?`
+      <div class="app-actions">
+        <button class="btn btn-approve" onclick="openApproveModal(${a.id},'${a.name.replace(/'/g,"\\'")}')">✅ Approve & activate</button>
+        <button class="btn btn-reject"  onclick="rejectApp(${a.id})">❌ Reject</button>
+      </div>`:`<div class="app-actions"><span style="font-size:12px;color:var(--tx3)">Already ${a.status}</span></div>`}
+    </div>`).join('');
+}
+
+function openApproveModal(id, name) {
+  pendingAppId = id; pendingAppName = name;
+  document.getElementById('approve-desc').textContent =
+    `Approving ${name} will create their creator account. They can log in immediately with their signup password (or set a new one below).`;
+  document.getElementById('approve-password').value = '';
+  document.getElementById('approve-modal').classList.add('open');
+}
+function closeApproveModal() {
+  document.getElementById('approve-modal').classList.remove('open');
+  pendingAppId = null;
+}
+async function confirmApprove() {
+  if (!pendingAppId) return;
+  const pw   = document.getElementById('approve-password').value.trim();
+  const body = { application_id: pendingAppId };
+  if (pw) body.password = pw;
+  const res = await fetch(`${API}/api/admin/creator/approve-application?secret=${SECRET}`, {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+  }).then(r => r.json()).catch(() => ({success:false, message:'Network error'}));
+  closeApproveModal();
+  showToast(res.message, res.success?'ok':'err');
+  if (res.success) loadApplications();
+}
+async function rejectApp(id) {
+  if (!confirm('Reject this application?')) return;
+  const res = await fetch(`${API}/api/admin/application/${id}/reject?secret=${SECRET}`, {method:'PATCH'})
+    .then(r => r.json()).catch(() => ({success:false}));
+  showToast(res.success?'Application rejected.':'Error', res.success?'':'err');
+  if (res.success) loadApplications();
+}
+
+// ── CREATORS ──────────────────────────────────────────────────────────────────
+async function loadCreators() {
+  const list = document.getElementById('creators-list');
+  list.innerHTML = '<div class="empty"><div class="spinner"></div></div>';
+  const res = await fetch(`${API}/api/admin/creators?secret=${SECRET}`)
+    .then(r => r.json()).catch(() => ({creators:[]}));
+  const creators = res.creators || [];
+  if (!creators.length) { list.innerHTML = '<div class="empty">No active creators yet.</div>'; return; }
+  list.innerHTML = `<table>
+    <tr><th>Name</th><th>Category</th><th>Email</th><th>Instagram</th><th>Price from</th><th>Rating</th><th>Events</th><th>Earned</th><th>Actions</th></tr>
+    ${creators.map(c=>`<tr>
+      <td><strong>${c.name}</strong></td><td>${c.category||'—'}</td><td>${c.email}</td>
+      <td>${c.instagram||'—'}</td><td>${fmt(c.price_from)}</td>
+      <td>${c.rating?'⭐ '+c.rating:'—'}</td><td>${c.total_events||0}</td><td>${fmt(c.total_earned)}</td>
+      <td><button class="btn btn-reject btn-sm" onclick="deactivateCreator(${c.id})">Deactivate</button></td>
+    </tr>`).join('')}
+  </table>`;
+}
+async function deactivateCreator(id) {
+  if (!confirm('Deactivate this creator?')) return;
+  const res = await fetch(`${API}/api/admin/creator/${id}/deactivate?secret=${SECRET}`, {method:'PATCH'})
+    .then(r => r.json()).catch(() => ({success:false}));
+  showToast(res.success?'Creator deactivated.':'Error', res.success?'':'err');
+  if (res.success) loadCreators();
+}
+
+// ── BOOKINGS ──────────────────────────────────────────────────────────────────
+async function loadBookings() {
+  const list = document.getElementById('bookings-list');
+  list.innerHTML = '<div class="empty"><div class="spinner"></div></div>';
+  const res = await fetch(`${API}/api/admin/dashboard?secret=${SECRET}`)
+    .then(r => r.json()).catch(() => ({bookings:[],stats:{}}));
+  const bks = res.bookings || [], st = res.stats || {};
+  document.getElementById('booking-stats').style.display = 'grid';
+  document.getElementById('bs-total').textContent   = st.total_bookings||0;
+  document.getElementById('bs-pending').textContent = st.pending_bookings||0;
+  document.getElementById('bs-revenue').textContent = fmt(st.revenue?.fan_total||0);
+  document.getElementById('bs-refunds').textContent = st.pending_refunds||0;
+
+  // Alert nav if refunds pending
+  if ((st.pending_refunds||0) > 0) {
+    document.getElementById('refund-alert-nav').style.display = 'inline';
+    document.getElementById('refunds-tab').style.color = 'var(--bl)';
+  }
+
+  if (!bks.length) { list.innerHTML = '<div class="empty">No bookings yet.</div>'; return; }
+  list.innerHTML = `<table>
+    <tr><th>Ref ID</th><th>Fan</th><th>Creator</th><th>Event</th><th>Date</th><th>Amount</th><th>Status</th><th>Payment</th><th>Refund</th><th>Actions</th></tr>
+    ${bks.map(b=>`<tr class="${b.refund_status==='refund_required'?'refund-row':''}">
+      <td><code style="font-size:11px;color:var(--or2)">${b.ref_id||'#'+b.id}</code></td>
+      <td><strong>${b.fan_name||'—'}</strong><br><span style="font-size:11px">${b.fan_email||''}</span></td>
+      <td>${b.creator_name||'—'}</td>
+      <td style="font-size:12px">${b.event_type||'Experience'}</td>
+      <td>${b.event_date?new Date(b.event_date).toLocaleDateString('en-IN'):'—'}</td>
+      <td>${fmt(b.amount)}</td>
+      <td><span class="badge badge-${b.status}">${b.status.replace(/_/g,' ')}</span></td>
+      <td><span class="badge badge-${b.payment_status==='paid'?'paid':'unpaid'}">${b.payment_status||'unpaid'}</span></td>
+      <td><span class="badge badge-${b.refund_status||'none'}">${(b.refund_status||'none').replace(/_/g,' ')}</span></td>
+      <td style="min-width:200px">
+        ${bookingActions(b)}
+      </td>
+    </tr>`).join('')}
+  </table>`;
+}
+
+function bookingActions(b) {
+  let acts = [];
+
+  // Accept / Reject pending
+  if (b.status === 'pending') {
+    acts.push(`<button class="btn btn-approve btn-sm" onclick="adminBookingAction(${b.id},'accept')">✅ Accept</button>`);
+    acts.push(`<button class="btn btn-reject btn-sm" onclick="adminBookingAction(${b.id},'reject')">❌ Reject</button>`);
+  }
+
+  // Complete confirmed
+  if (b.status === 'confirmed') {
+    acts.push(`<button class="btn btn-primary btn-sm" onclick="adminBookingAction(${b.id},'complete')">🎉 Complete</button>`);
+    acts.push(`<button class="btn btn-reject btn-sm" onclick="adminBookingAction(${b.id},'reject')">❌ Cancel</button>`);
+  }
+
+  // Reschedule
+  if (b.status === 'reschedule_requested') {
+    acts.push(`<button class="btn btn-approve btn-sm" onclick="adminBookingAction(${b.id},'reschedule_accept')">✅ New date</button>`);
+    acts.push(`<button class="btn btn-reject btn-sm" onclick="adminBookingAction(${b.id},'reschedule_reject')">Keep original</button>`);
+  }
+
+  // Release to creator (completed + paid + not yet paid out + not refunded)
+  if (b.status === 'completed' && b.payment_status === 'paid' && b.payout_status !== 'paid' && b.refund_status !== 'refunded') {
+    acts.push(`<button class="btn btn-approve btn-sm" onclick="adminReleaseDirect(${b.id},'${(b.creator_name||'').replace(/'/g,"\\'")}',${b.creator_due||b.amount||0})">💸 Pay creator</button>`);
+  }
+
+  // REFUND FAN — shown when:
+  //   • payment was made AND
+  //   • refund not yet done AND
+  //   • booking is cancelled OR creator rejected
+  const needsRefund = b.payment_status === 'paid'
+    && b.refund_status !== 'refunded'
+    && (b.status === 'cancelled' || b.refund_status === 'refund_required' || b.refund_status === 'refund_initiated');
+
+  if (needsRefund) {
+    acts.push(`<button class="btn btn-refund btn-sm" onclick="openRefundModal(${b.id},'${(b.fan_name||'').replace(/'/g,"\\'")}',${b.fan_total||b.amount||0})">↩️ Refund fan</button>`);
+  }
+
+  return acts.length ? `<div style="display:flex;gap:5px;flex-wrap:wrap">${acts.join('')}</div>` : '<span style="font-size:11px;color:var(--tx3)">—</span>';
+}
+
+// ── BOOKING ACTIONS ───────────────────────────────────────────────────────────
+async function adminBookingAction(bookingId, action) {
+  const labels = {
+    accept:            'Accept this booking?',
+    reject:            'Cancel/reject this booking?',
+    complete:          'Mark this booking as completed?',
+    reschedule_accept: "Accept the fan's new date request?",
+    reschedule_reject: 'Keep the original date?'
+  };
+  if (!confirm(labels[action] || 'Confirm action?')) return;
+
+  let url, method = 'PATCH', body = null;
+  if (action === 'accept')            url = `${API}/api/admin/booking/${bookingId}/accept?secret=${SECRET}`;
+  else if (action === 'reject')     { url = `${API}/api/admin/booking/${bookingId}/reject?secret=${SECRET}`; body = { reason: 'Cancelled by admin' }; }
+  else if (action === 'complete')     url = `${API}/api/admin/booking/${bookingId}/complete?secret=${SECRET}`;
+  else if (action === 'reschedule_accept') { url = `${API}/api/admin/booking/${bookingId}/reschedule?secret=${SECRET}`; body = { decision: 'accept' }; }
+  else if (action === 'reschedule_reject') { url = `${API}/api/admin/booking/${bookingId}/reschedule?secret=${SECRET}`; body = { decision: 'reject' }; }
+
+  const res = await fetch(url, {
+    method, headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : null
+  }).then(r => r.json()).catch(() => ({ success: false, message: 'Error' }));
+
+  showToast(res.message || (res.success ? 'Done!' : 'Error'), res.success ? 'ok' : 'err');
+  if (res.success) loadBookings();
+}
+
+async function adminReleaseDirect(bookingId, creatorName, amount) {
+  const upi = prompt(`Pay ${fmt(amount)} to ${creatorName}?\nEnter their UPI ID (or leave blank):`);
+  if (upi === null) return;
+  const res = await fetch(`${API}/api/admin/payout/release?secret=${SECRET}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ booking_id: bookingId, upi_id: upi })
+  }).then(r => r.json()).catch(() => ({ success: false, message: 'Error' }));
+  showToast(res.message, res.success ? 'ok' : 'err');
+  if (res.success) loadBookings();
+}
+
+// ── REFUND MODAL ──────────────────────────────────────────────────────────────
+let pendingRefundId = null, pendingRefundAmt = 0, pendingRefundFan = '';
+
+function openRefundModal(bookingId, fanName, amount) {
+  pendingRefundId  = bookingId;
+  pendingRefundAmt = amount;
+  pendingRefundFan = fanName;
+  document.getElementById('refund-desc').textContent =
+    `Issue a refund of ${fmt(amount)} to fan "${fanName}" for booking #${bookingId}. Make sure you have already initiated the actual transfer.`;
+  document.getElementById('refund-reason').value = '';
+  document.getElementById('refund-modal').classList.add('open');
+}
+function closeRefundModal() {
+  document.getElementById('refund-modal').classList.remove('open');
+  pendingRefundId = null;
+}
+async function confirmRefund() {
+  if (!pendingRefundId) return;
+  const reason = document.getElementById('refund-reason').value.trim() || 'Admin issued refund';
+  const res = await fetch(`${API}/api/admin/booking/${pendingRefundId}/refund?secret=${SECRET}`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reason })
+  }).then(r => r.json()).catch(() => ({ success: false, message: 'Error' }));
+  closeRefundModal();
+  showToast(res.message, res.success ? 'ok' : 'err');
+  if (res.success) { loadBookings(); loadRefunds(); }
+}
+
+// ── REFUNDS TAB ───────────────────────────────────────────────────────────────
+async function loadRefunds() {
+  const list = document.getElementById('refunds-list');
+  list.innerHTML = '<div class="empty"><div class="spinner"></div></div>';
+  const res = await fetch(`${API}/api/admin/dashboard?secret=${SECRET}`)
+    .then(r => r.json()).catch(() => ({ bookings: [] }));
+
+  const bks = (res.bookings || []).filter(b =>
+    b.payment_status === 'paid' &&
+    (b.refund_status === 'refund_required' || b.refund_status === 'refund_initiated' ||
+     b.refund_status === 'refunded' || (b.status === 'cancelled' && b.refund_status !== 'none' && b.refund_status !== null))
+  );
+
+  if (!bks.length) {
+    list.innerHTML = '<div class="empty">✅ No refunds pending. All clear!</div>';
+    return;
+  }
+
+  list.innerHTML = `<table>
+    <tr><th>Ref ID</th><th>Fan</th><th>Creator</th><th>Amount</th><th>Cancelled by</th><th>Refund status</th><th>Action</th></tr>
+    ${bks.map(b => {
+      const needsRefund = b.refund_status !== 'refunded';
+      return `<tr class="${needsRefund ? 'refund-row' : ''}">
+        <td><code style="font-size:11px;color:var(--or2)">${b.ref_id||'#'+b.id}</code></td>
+        <td><strong>${b.fan_name||'—'}</strong><br><span style="font-size:11px">${b.fan_email||''}</span></td>
+        <td>${b.creator_name||'—'}</td>
+        <td><strong style="color:var(--bl)">${fmt(b.fan_total||b.amount||0)}</strong></td>
+        <td>${b.cancelled_by||'—'}</td>
+        <td><span class="badge badge-${b.refund_status||'none'}">${(b.refund_status||'none').replace(/_/g,' ')}</span></td>
+        <td>${needsRefund
+          ? `<button class="btn btn-refund btn-sm" onclick="openRefundModal(${b.id},'${(b.fan_name||'').replace(/'/g,"\\'")}',${b.fan_total||b.amount||0})">↩️ Issue Refund</button>`
+          : '<span style="font-size:11px;color:var(--gn)">✅ Done</span>'}
+        </td>
+      </tr>`;
+    }).join('')}
+  </table>`;
+}
+
+// ── FANS ──────────────────────────────────────────────────────────────────────
+async function loadFans() {
+  const list = document.getElementById('fans-list');
+  list.innerHTML = '<div class="empty"><div class="spinner"></div></div>';
+  const res = await fetch(`${API}/api/admin/fans?secret=${SECRET}`)
+    .then(r => r.json()).catch(() => ({fans:[]}));
+  const fans = res.fans || [];
+  if (!fans.length) { list.innerHTML = '<div class="empty">No fans yet.</div>'; return; }
+  list.innerHTML = `<table>
+    <tr><th>Name</th><th>Email</th><th>Phone</th><th>City</th><th>Joined</th><th>Referral code</th></tr>
+    ${fans.map(f=>`<tr>
+      <td><strong>${f.name}</strong></td><td>${f.email}</td><td>${f.phone||'—'}</td>
+      <td>${f.city||'—'}</td><td>${new Date(f.created_at).toLocaleDateString('en-IN')}</td>
+      <td><code style="font-size:11px;background:var(--bg2);padding:2px 6px;border-radius:4px">${f.referral_code||'—'}</code></td>
+    </tr>`).join('')}
+  </table>`;
+}
+
+// ── PAYMENTS ──────────────────────────────────────────────────────────────────
+async function loadPayments() {
+  const list = document.getElementById('payments-list');
+  list.innerHTML = '<div class="empty"><div class="spinner"></div></div>';
+  const res = await fetch(`${API}/api/admin/payments?secret=${SECRET}`)
+    .then(r => r.json()).catch(() => ({payments:[],summary:{}}));
+  const payments = res.payments || [], sum = res.summary || {};
+
+  document.getElementById('ps-collected').textContent = fmt(sum.total_collected||0);
+  document.getElementById('ps-platform').textContent  = fmt(sum.platform_revenue||0);
+  document.getElementById('ps-creator').textContent   = fmt(sum.creator_payouts||0);
+  document.getElementById('ps-pending').textContent   = fmt(sum.pending_payouts||0);
+  document.getElementById('ps-refunded').textContent  = fmt(sum.total_refunded||0);
+
+  if (!payments.length) { list.innerHTML = '<div class="empty">No payments yet.</div>'; return; }
+  list.innerHTML = `<table>
+    <tr><th>Ref ID</th><th>Fan</th><th>Creator</th><th>Paid</th><th>Platform</th><th>Creator due</th><th>Payout</th><th>Refund</th><th>Actions</th></tr>
+    ${payments.map(p=>`<tr class="${p.refund_status==='refund_required'?'refund-row':''}">
+      <td><code style="font-size:11px;color:var(--or2)">${p.ref_id||'#'+p.id}</code></td>
+      <td><strong>${p.fan_name||'—'}</strong><br><span style="font-size:11px">${p.fan_email||''}</span></td>
+      <td>${p.creator_name||'—'}</td>
+      <td><strong style="color:var(--gn)">${fmt(p.fan_total||p.amount||0)}</strong></td>
+      <td style="color:var(--or2)">${fmt(p.platform_cut||0)}</td>
+      <td style="color:var(--bl)">${fmt(p.creator_due||0)}</td>
+      <td><span class="badge badge-${p.payout_status==='paid'?'approved':'pending'}">${p.payout_status||'pending'}</span></td>
+      <td><span class="badge badge-${p.refund_status||'none'}">${(p.refund_status||'—').replace(/_/g,' ')}</span></td>
+      <td style="min-width:180px">
+        ${p.payout_status !== 'paid' && p.refund_status !== 'refunded'
+          ? `<button class="btn btn-approve btn-sm" onclick="releasePayout(${p.id},'${(p.creator_name||'').replace(/'/g,"\\'")}',${p.creator_due||0})">💸 Release</button>`
+          : ''}
+        ${p.payment_status === 'paid' && p.refund_status !== 'refunded' && (p.status === 'cancelled' || p.refund_status === 'refund_required')
+          ? `<button class="btn btn-refund btn-sm" onclick="openRefundModal(${p.id},'${(p.fan_name||'').replace(/'/g,"\\'")}',${p.fan_total||p.amount||0})">↩️ Refund fan</button>`
+          : ''}
+        ${p.payout_status === 'paid' && p.refund_status === 'refunded' ? '<span style="font-size:11px;color:var(--tx3)">All settled</span>' : ''}
+        ${!p.payout_status !== 'paid' && !p.refund_status ? '<span style="font-size:11px;color:var(--tx3)">—</span>' : ''}
+      </td>
+    </tr>`).join('')}
+  </table>`;
+}
+
+async function releasePayout(bookingId, creatorName, amount) {
+  const upi = prompt(`Release ${fmt(amount)} to ${creatorName}?\n\nEnter their UPI ID (or leave blank for manual bank transfer):`);
+  if (upi === null) return;
+  const res = await fetch(`${API}/api/admin/payout/release?secret=${SECRET}`, {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({booking_id: bookingId, upi_id: upi})
+  }).then(r => r.json()).catch(() => ({success:false, message:'Error'}));
+  showToast(res.message, res.success?'ok':'err');
+  if (res.success) loadPayments();
+}
+
+// ── PAYOUTS ───────────────────────────────────────────────────────────────────
+async function loadPayouts() {
+  const list = document.getElementById('payouts-list');
+  list.innerHTML = '<div class="empty"><div class="spinner"></div></div>';
+  const res = await fetch(`${API}/api/admin/payouts?secret=${SECRET}`)
+    .then(r => r.json()).catch(() => ({payouts:[]}));
+  const payouts = res.payouts || [];
+  if (!payouts.length) { list.innerHTML = '<div class="empty">No payout requests yet.</div>'; return; }
+  list.innerHTML = `<table>
+    <tr><th>Creator</th><th>Amount</th><th>UPI ID</th><th>Requested</th><th>Status</th><th>Action</th></tr>
+    ${payouts.map(p=>`<tr>
+      <td><strong>${p.creator_name||'Creator #'+p.creator_id}</strong></td>
+      <td>${fmt(p.amount)}</td><td>${p.upi_id}</td>
+      <td>${new Date(p.requested_at||p.created_at).toLocaleDateString('en-IN')}</td>
+      <td><span class="badge badge-${p.status==='paid'?'paid':p.status==='requested'?'pending':'cancelled'}">${p.status}</span></td>
+      <td>${p.status==='requested'?`<button class="btn btn-approve btn-sm" onclick="markPayout(${p.id},'paid')">Mark paid</button>`:'—'}</td>
+    </tr>`).join('')}
+  </table>`;
+}
+async function markPayout(id, status) {
+  const res = await fetch(`${API}/api/admin/payout/${id}?secret=${SECRET}`, {
+    method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({status})
+  }).then(r => r.json()).catch(() => ({success:false}));
+  showToast(res.success?'Payout marked as paid!':'Error', res.success?'ok':'err');
+  if (res.success) loadPayouts();
+}
+
+// ── OVERVIEW ──────────────────────────────────────────────────────────────────
+async function loadOverview() {
+  const res = await fetch(`${API}/api/admin/dashboard?secret=${SECRET}`)
+    .then(r => r.json()).catch(() => ({stats:{}}));
+  const st = res.stats || {};
+  document.getElementById('ov-creators').textContent = st.total_creators||0;
+  document.getElementById('ov-fans').textContent     = st.total_fans||0;
+  document.getElementById('ov-bookings').textContent = st.total_bookings||0;
+  document.getElementById('ov-revenue').textContent  = fmt(st.revenue?.scribuz_cut||0);
+  document.getElementById('overview-detail').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px">
+      <div>
+        <div style="color:var(--tx3);font-size:10px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Booking status breakdown</div>
+        ${['pending','confirmed','completed','cancelled'].map(s=>`
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)">
+            <span style="color:var(--tx2);text-transform:capitalize">${s}</span>
+            <strong>${(res.bookings||[]).filter(b=>b.status===s).length}</strong>
+          </div>`).join('')}
+        <div style="display:flex;justify-content:space-between;padding:8px 0">
+          <span style="color:var(--rd)">Pending refunds</span>
+          <strong style="color:var(--rd)">${st.pending_refunds||0}</strong>
+        </div>
+      </div>
+      <div>
+        <div style="color:var(--tx3);font-size:10px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Revenue breakdown</div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)">
+          <span style="color:var(--tx2)">Total fan payments</span><strong>${fmt(st.revenue?.fan_total||0)}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)">
+          <span style="color:var(--tx2)">Creator payouts due</span><strong>${fmt(st.revenue?.creator_due||0)}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0">
+          <span style="color:var(--gn)">ScriBuz earnings (5%)</span><strong style="color:var(--gn)">${fmt(st.revenue?.scribuz_cut||0)}</strong>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+loadApplications();
+// Check for pending refunds on load and update nav
+fetch(`${API}/api/admin/dashboard?secret=${SECRET}`)
+  .then(r => r.json())
+  .then(res => {
+    const pending = res.stats?.pending_refunds || 0;
+    if (pending > 0) {
+      document.getElementById('refund-alert-nav').style.display = 'inline';
+      document.getElementById('refunds-tab').style.color = 'var(--bl)';
+      document.getElementById('refunds-tab').textContent = `↩️ Refunds (${pending})`;
+    }
+  }).catch(()=>{});
+</script>
+</body>
+</html>

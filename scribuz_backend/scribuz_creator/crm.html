@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fan CRM — ScriBuz</title>
+  <link rel="stylesheet" href="/creator/style.css">
+  <style>
+    .crm-wrap{max-width:1200px;margin:0 auto;padding:24px 2rem 60px}
+    .crm-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+    .crm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+    .fan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+    .fan-card{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);padding:18px;transition:.2s;position:relative}
+    .fan-card:hover{border-color:var(--or);box-shadow:0 4px 16px rgba(216,90,48,.08)}
+    .fan-card.superfan{border-color:var(--yw3);background:linear-gradient(135deg,#fff 80%,var(--yw2))}
+    .fan-card.superfan::before{content:'⭐ SUPER FAN';position:absolute;top:12px;right:12px;font-size:9px;font-weight:700;color:var(--yw);background:var(--yw2);padding:2px 8px;border-radius:20px;border:1px solid var(--yw3)}
+    .fc-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--or),var(--or2));display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700;margin-bottom:12px}
+    .fc-name{font-size:15px;font-weight:700;color:var(--tx);margin-bottom:3px}
+    .fc-email{font-size:12px;color:var(--tx2);margin-bottom:10px}
+    .fc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+    .fc-stat{background:var(--bg3);border-radius:8px;padding:8px;text-align:center}
+    .fc-stat-val{font-size:14px;font-weight:700;color:var(--tx)}
+    .fc-stat-label{font-size:10px;color:var(--tx3);margin-top:2px}
+    .fc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+    .fc-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;cursor:pointer;transition:.15s}
+    .fc-tag.active{background:var(--or);color:#fff;border:1px solid var(--or)}
+    .fc-tag.inactive{background:var(--bg3);color:var(--tx2);border:1px solid var(--bd)}
+    .fc-tag:hover{border-color:var(--or);color:var(--or)}
+    .fc-last{font-size:11px;color:var(--tx3);margin-top:4px}
+    .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    .fbar-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--bd);background:#fff;color:var(--tx2);transition:.15s;font-family:inherit}
+    .fbar-btn.active{background:var(--or);border-color:var(--or);color:#fff}
+    .search-inp{padding:8px 14px;border-radius:var(--r);border:1.5px solid var(--bd);font-size:13px;font-family:inherit;outline:none;width:240px;transition:.2s}
+    .search-inp:focus{border-color:var(--or)}
+    .empty-fans{text-align:center;padding:60px;color:var(--tx3);grid-column:1/-1}
+  </style>
+</head>
+<body>
+<nav class="cnav">
+  <div class="cnav-inner">
+    <div style="display:flex;align-items:center">
+      <a href="/creator/dashboard.html" class="cnav-logo">Scri<span>Buz</span></a>
+      <span class="cnav-badge">Fan CRM</span>
+    </div>
+    <div class="cnav-right">
+      <a href="/creator/dashboard.html" style="font-size:13px;color:rgba(255,255,255,.5)">← Dashboard</a>
+      <button class="btn-logout" onclick="doLogout()">Log out →</button>
+    </div>
+  </div>
+</nav>
+
+<div class="crm-wrap">
+  <div class="crm-header">
+    <div>
+      <h1 style="font-size:1.4rem;font-weight:700;letter-spacing:-.5px">👥 Fan CRM</h1>
+      <p style="font-size:13px;color:var(--tx2);margin-top:4px">Track your fans, identify Super Fans, manage relationships</p>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="crm-stats">
+    <div class="scard"><div class="scard-icon">👥</div><div class="scard-label">Total fans</div><div class="scard-val orange" id="cs-total">—</div><div class="scard-sub">Unique bookers</div><div class="scard-bar"></div></div>
+    <div class="scard"><div class="scard-icon">⭐</div><div class="scard-label">Super fans</div><div class="scard-val orange" id="cs-super">—</div><div class="scard-sub">Booked 2+ times</div><div class="scard-bar"></div></div>
+    <div class="scard"><div class="scard-icon">💰</div><div class="scard-label">Top fan value</div><div class="scard-val green" id="cs-top">—</div><div class="scard-sub">Highest spender</div><div class="scard-bar green"></div></div>
+    <div class="scard"><div class="scard-icon">📅</div><div class="scard-label">Repeat rate</div><div class="scard-val blue" id="cs-repeat">—</div><div class="scard-sub">Fans who rebooked</div><div class="scard-bar blue"></div></div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-bar">
+    <button class="fbar-btn active" onclick="filterFans('all',this)">All fans</button>
+    <button class="fbar-btn" onclick="filterFans('superfan',this)">⭐ Super fans</button>
+    <button class="fbar-btn" onclick="filterFans('new',this)">🆕 New fans</button>
+    <button class="fbar-btn" onclick="filterFans('vip',this)">💎 VIP (₹50K+)</button>
+    <input class="search-inp" id="fan-search" placeholder="🔍 Search by name…" oninput="renderFans()">
+  </div>
+
+  <div class="fan-grid" id="fan-grid">
+    <div class="empty-fans"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script>
+const API = 'http://127.0.0.1:5000';
+const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
+
+function getSession() {
+  const token = localStorage.getItem('sc_token');
+  const creator = localStorage.getItem('sc_creator');
+  if (!token || !creator) return null;
+  try { return { token, creator: JSON.parse(creator) }; } catch { return null; }
+}
+function doLogout() {
+  localStorage.removeItem('sc_token'); localStorage.removeItem('sc_creator');
+  window.location.href = '/creator/auth.html';
+}
+function showToast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast'+(err?' err':''); t.style.display='block';
+  setTimeout(() => t.style.display='none', 3000);
+}
+
+let allFans = [], currentFilter = 'all';
+let fanTags = {}; // stored locally per fan
+
+function loadTags() {
+  const s = getSession(); if (!s) return;
+  try { fanTags = JSON.parse(localStorage.getItem('crm_tags_'+s.creator.id)||'{}'); } catch { fanTags={}; }
+}
+function saveTags() {
+  const s = getSession(); if (!s) return;
+  localStorage.setItem('crm_tags_'+s.creator.id, JSON.stringify(fanTags));
+}
+
+async function loadCRM() {
+  const s = getSession();
+  if (!s) { window.location.href='/creator/auth.html'; return; }
+  loadTags();
+
+  const res = await fetch(`${API}/api/creator/bookings`, {
+    headers: {'Authorization': `Bearer ${s.token}`}
+  }).then(r=>r.json()).catch(()=>({bookings:[]}));
+
+  const bks = res.bookings || [];
+
+  // Build fan profiles from bookings
+  const fanMap = {};
+  bks.forEach(b => {
+    if (!b.fan_id) return;
+    if (!fanMap[b.fan_id]) {
+      fanMap[b.fan_id] = {
+        id: b.fan_id, name: b.fan_name || 'Fan #'+b.fan_id,
+        bookings: [], totalSpent: 0
+      };
+    }
+    fanMap[b.fan_id].bookings.push(b);
+    if (b.status === 'completed') fanMap[b.fan_id].totalSpent += (b.amount||0);
+  });
+
+  allFans = Object.values(fanMap).map(f => ({
+    ...f,
+    bookingCount: f.bookings.length,
+    isSuperfan: f.bookings.filter(b=>['confirmed','completed'].includes(b.status)).length >= 2,
+    lastBooking: f.bookings.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0]
+  }));
+
+  // Stats
+  const superCount  = allFans.filter(f=>f.isSuperfan).length;
+  const topSpender  = Math.max(...allFans.map(f=>f.totalSpent), 0);
+  const repeatRate  = allFans.length > 0 ? Math.round((superCount/allFans.length)*100) : 0;
+  document.getElementById('cs-total').textContent  = allFans.length;
+  document.getElementById('cs-super').textContent  = superCount;
+  document.getElementById('cs-top').textContent    = fmt(topSpender);
+  document.getElementById('cs-repeat').textContent = repeatRate + '%';
+
+  renderFans();
+}
+
+function filterFans(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.fbar-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFans();
+}
+
+const TAGS_AVAILABLE = ['VIP','Foodie','Gifter','Corporate','Regular','First-timer'];
+
+function renderFans() {
+  const search = document.getElementById('fan-search').value.toLowerCase();
+  let fans = allFans.filter(f => !search || f.name.toLowerCase().includes(search));
+  if (currentFilter === 'superfan') fans = fans.filter(f=>f.isSuperfan);
+  if (currentFilter === 'new')      fans = fans.filter(f=>f.bookingCount===1);
+  if (currentFilter === 'vip')      fans = fans.filter(f=>f.totalSpent>=50000);
+  fans.sort((a,b) => b.totalSpent - a.totalSpent);
+
+  const grid = document.getElementById('fan-grid');
+  if (!fans.length) {
+    grid.innerHTML = '<div class="empty-fans">No fans match this filter.</div>'; return;
+  }
+  grid.innerHTML = fans.map(f => {
+    const tags = fanTags[f.id] || [];
+    const lastDt = f.lastBooking?.created_at
+      ? new Date(f.lastBooking.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})
+      : '—';
+    const initials = f.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    return `<div class="fan-card${f.isSuperfan?' superfan':''}">
+      <div class="fc-avatar">${initials}</div>
+      <div class="fc-name">${f.name}</div>
+      <div class="fc-email">Fan #${f.id}</div>
+      <div class="fc-stats">
+        <div class="fc-stat"><div class="fc-stat-val">${f.bookingCount}</div><div class="fc-stat-label">Bookings</div></div>
+        <div class="fc-stat"><div class="fc-stat-val">${fmt(f.totalSpent)}</div><div class="fc-stat-label">Spent</div></div>
+        <div class="fc-stat"><div class="fc-stat-val">${f.isSuperfan?'⭐':'🆕'}</div><div class="fc-stat-label">${f.isSuperfan?'Super Fan':'New'}</div></div>
+      </div>
+      <div class="fc-tags">
+        ${TAGS_AVAILABLE.map(tag => `<span class="fc-tag ${tags.includes(tag)?'active':'inactive'}" onclick="toggleTag(${f.id},'${tag}',this)">${tag}</span>`).join('')}
+      </div>
+      <div class="fc-last">Last booking: ${lastDt}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleTag(fanId, tag, el) {
+  fanTags[fanId] = fanTags[fanId] || [];
+  if (fanTags[fanId].includes(tag)) {
+    fanTags[fanId] = fanTags[fanId].filter(t=>t!==tag);
+    el.classList.remove('active'); el.classList.add('inactive');
+  } else {
+    fanTags[fanId].push(tag);
+    el.classList.remove('inactive'); el.classList.add('active');
+  }
+  saveTags();
+  showToast('Tag updated!');
+}
+
+loadCRM();
+</script>
+</body>
+</html>

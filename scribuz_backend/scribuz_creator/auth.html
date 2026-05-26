@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Creator Portal — ScriBuz</title>
+  <link rel="stylesheet" href="/creator/style.css">
+  <style>
+    .auth-wrap { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
+
+    /* LEFT PANEL */
+    .auth-left { background: #0c0c0a; display: flex; flex-direction: column; justify-content: space-between; padding: 44px; position: relative; overflow: hidden; }
+    .al-orb1 { position: absolute; top: -80px; left: 50%; transform: translateX(-50%); width: 500px; height: 400px; background: radial-gradient(ellipse, rgba(216,90,48,.14), transparent 65%); pointer-events: none; }
+    .al-orb2 { position: absolute; bottom: -60px; right: -60px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(216,90,48,.07), transparent 70%); pointer-events: none; }
+    .al-logo { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -.5px; position: relative; }
+    .al-logo span { background: linear-gradient(135deg, #D85A30, #F0997B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .al-logo-sub { font-size: 11px; color: rgba(255,255,255,.3); font-weight: 400; margin-left: 6px; letter-spacing: .04em; }
+    .al-body { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 3rem 0; }
+    .al-title { font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 800; letter-spacing: -1.5px; color: #fff; line-height: 1.05; margin-bottom: 14px; }
+    .al-title em { font-style: normal; background: linear-gradient(135deg, #D85A30, #F0997B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .al-sub { font-size: 14px; color: rgba(255,255,255,.4); line-height: 1.75; max-width: 300px; margin-bottom: 36px; }
+    .al-perks { display: flex; flex-direction: column; gap: 14px; }
+    .al-perk { display: flex; align-items: center; gap: 12px; }
+    .al-perk-ic { width: 36px; height: 36px; border-radius: 10px; background: rgba(216,90,48,.12); border: 1px solid rgba(216,90,48,.2); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .al-perk-tx { font-size: 13px; color: rgba(255,255,255,.5); line-height: 1.4; }
+    .al-perk-tx strong { color: rgba(255,255,255,.85); font-weight: 600; }
+    .al-foot { font-size: 11px; color: rgba(255,255,255,.18); position: relative; }
+
+    /* RIGHT PANEL */
+    .auth-right { background: #f3f2ef; display: flex; align-items: center; justify-content: center; padding: 2rem; overflow-y: auto; }
+    .auth-card { width: 100%; max-width: 440px; }
+
+    /* TABS */
+    .auth-tabs { display: flex; background: #e8e7e3; border-radius: 12px; padding: 4px; margin-bottom: 28px; }
+    .auth-tab { flex: 1; padding: 9px; text-align: center; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; color: #5C5B57; border: none; background: none; font-family: inherit; }
+    .auth-tab.active { background: #fff; color: #1A1A18; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+
+    /* FORMS */
+    .auth-panel { display: none; }
+    .auth-panel.active { display: block; }
+    .abox { background: #fff; border: 1.5px solid #E5E4E0; border-radius: 16px; padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+    .abox h2 { font-size: 1.3rem; font-weight: 700; letter-spacing: -.5px; margin-bottom: 4px; color: #1A1A18; }
+    .abox .abox-sub { font-size: 13px; color: #5C5B57; margin-bottom: 22px; }
+    .fg { margin-bottom: 14px; }
+    .fg label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #5C5B57; margin-bottom: 5px; }
+    .fg input, .fg select, .fg textarea { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1.5px solid #E5E4E0; font-size: 14px; font-family: inherit; color: #1A1A18; background: #fff; outline: none; transition: .2s; }
+    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: #D85A30; box-shadow: 0 0 0 3px rgba(216,90,48,.08); }
+    .fg .hint { font-size: 11px; color: #9C9B96; margin-top: 4px; }
+    .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .fmsg { padding: 10px 14px; border-radius: 10px; font-size: 13px; margin-bottom: 14px; display: none; border: 1px solid; }
+    .fmsg.ok { background: #EAF3DE; color: #27500A; border-color: #97C459; display: block; }
+    .fmsg.err { background: #FCEBEB; color: #A32D2D; border-color: #F87171; display: block; }
+
+    /* STEP INDICATOR */
+    .steps-ind { display: flex; align-items: center; gap: 6px; margin-bottom: 20px; }
+    .si-step { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: #9C9B96; }
+    .si-dot { width: 24px; height: 24px; border-radius: 50%; background: #E5E4E0; color: #9C9B96; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: .2s; }
+    .si-dot.done { background: #97C459; color: #fff; }
+    .si-dot.active { background: #D85A30; color: #fff; }
+    .si-line { flex: 1; height: 2px; background: #E5E4E0; border-radius: 2px; transition: .2s; }
+    .si-line.done { background: #97C459; }
+
+    /* SUBMIT BUTTON */
+    .btn-submit { width: 100%; padding: 13px; background: #D85A30; color: #fff; border: none; border-radius: 100px; font-size: 15px; font-weight: 700; cursor: pointer; transition: .2s; font-family: inherit; margin-top: 4px; letter-spacing: -.2px; }
+    .btn-submit:hover { background: #c24d25; transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .btn-back { width: 100%; padding: 11px; background: #f3f2ef; color: #5C5B57; border: 1.5px solid #E5E4E0; border-radius: 100px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .2s; font-family: inherit; margin-top: 8px; }
+    .btn-back:hover { border-color: #9C9B96; color: #1A1A18; }
+
+    /* SUCCESS STATE */
+    .success-state { text-align: center; padding: 20px 0; }
+    .success-state .si { font-size: 3.5rem; margin-bottom: 16px; }
+    .success-state h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: #27500A; }
+    .success-state p { font-size: 13px; color: #5C5B57; line-height: 1.7; margin-bottom: 20px; }
+
+    /* PASSWORD STRENGTH */
+    .pw-strength { margin-top: 6px; }
+    .pw-bar { height: 3px; border-radius: 2px; background: #E5E4E0; overflow: hidden; margin-bottom: 4px; }
+    .pw-fill { height: 100%; border-radius: 2px; transition: width .3s, background .3s; width: 0%; }
+    .pw-label { font-size: 11px; color: #9C9B96; }
+
+    @media(max-width:900px) {
+      .auth-wrap { grid-template-columns: 1fr; }
+      .auth-left { display: none; }
+      .auth-right { min-height: 100vh; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="auth-left">
+    <div class="al-orb1"></div>
+    <div class="al-orb2"></div>
+    <div class="al-logo">Scri<span>Buz</span><span class="al-logo-sub">Creator Portal</span></div>
+    <div class="al-body">
+      <h2 class="al-title">Your creator<br><em>command centre.</em></h2>
+      <p class="al-sub">Everything you need to run your ScriBuz business — bookings, earnings, analytics and fans — in one place.</p>
+      <div class="al-perks">
+        <div class="al-perk"><div class="al-perk-ic">📊</div><div class="al-perk-tx"><strong>Advanced insights</strong> — revenue, ratings, booking trends</div></div>
+        <div class="al-perk"><div class="al-perk-ic">📋</div><div class="al-perk-tx"><strong>Accept or reject</strong> every booking with one click</div></div>
+        <div class="al-perk"><div class="al-perk-ic">💰</div><div class="al-perk-tx"><strong>UPI payouts</strong> — request anytime, paid in 2 days</div></div>
+        <div class="al-perk"><div class="al-perk-ic">🗓</div><div class="al-perk-tx"><strong>Calendar management</strong> — block dates easily</div></div>
+        <div class="al-perk"><div class="al-perk-ic">💬</div><div class="al-perk-tx"><strong>Chat with fans</strong> before every experience</div></div>
+        <div class="al-perk"><div class="al-perk-ic">🏅</div><div class="al-perk-tx"><strong>Creator badges</strong> — Bronze, Silver, Gold milestones</div></div>
+      </div>
+    </div>
+    <div class="al-foot">© 2026 ScriBuz · Hyderabad · hello@scribuz.in</div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="auth-right">
+    <div class="auth-card">
+
+      <!-- TABS -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login"  onclick="switchTab('login')">Log in</button>
+        <button class="auth-tab"        id="tab-signup" onclick="switchTab('signup')">Sign up</button>
+      </div>
+
+      <!-- ══ LOGIN PANEL ══ -->
+      <div class="auth-panel active" id="panel-login">
+        <div class="abox">
+          <h2>Welcome back 👋</h2>
+          <p class="abox-sub">Log in to manage your bookings and grow your income.</p>
+          <div class="fmsg" id="login-msg"></div>
+          <div class="fg"><label>Email address</label><input id="l-email" type="email" placeholder="you@email.com" required></div>
+          <div class="fg"><label>Password</label><input id="l-pass" type="password" placeholder="Your password" required></div>
+          <button class="btn-submit" id="login-btn" onclick="doLogin()">Log in to dashboard →</button>
+          <p style="text-align:center;font-size:12px;color:#9C9B96;margin-top:14px">Not a creator yet? <button onclick="switchTab('signup')" style="background:none;border:none;color:#D85A30;font-weight:600;cursor:pointer;font-family:inherit;font-size:12px">Sign up here →</button></p>
+          <p style="text-align:center;font-size:12px;color:#9C9B96;margin-top:6px">Are you a fan? <a href="/fan/login.html" style="color:#5C5B57;font-weight:500">Fan login →</a></p>
+        </div>
+      </div>
+
+      <!-- ══ SIGNUP PANEL ══ -->
+      <div class="auth-panel" id="panel-signup">
+
+        <!-- STEP INDICATOR -->
+        <div class="steps-ind">
+          <div class="si-step"><div class="si-dot active" id="sd1">1</div></div>
+          <div class="si-line" id="sl1"></div>
+          <div class="si-step"><div class="si-dot" id="sd2">2</div></div>
+          <div class="si-line" id="sl2"></div>
+          <div class="si-step"><div class="si-dot" id="sd3">3</div></div>
+        </div>
+
+        <!-- STEP 1 -->
+        <div class="abox" id="signup-step-1">
+          <h2>Create your account</h2>
+          <p class="abox-sub">Step 1 of 3 — Your account details</p>
+          <div class="fmsg" id="s1-msg"></div>
+          <div class="frow">
+            <div class="fg"><label>Full name *</label><input id="s-name" type="text" placeholder="Your creator name" required></div>
+            <div class="fg"><label>Email *</label><input id="s-email" type="email" placeholder="you@email.com" required></div>
+          </div>
+          <div class="fg">
+            <label>Password *</label>
+            <input id="s-pass" type="password" placeholder="Min 8 chars, 1 uppercase, 1 number" required oninput="checkPwStrength(this.value)">
+            <div class="pw-strength">
+              <div class="pw-bar"><div class="pw-fill" id="pw-fill"></div></div>
+              <div class="pw-label" id="pw-label">Enter a password</div>
+            </div>
+          </div>
+          <div class="fg">
+            <label>WhatsApp number *</label>
+            <input id="s-phone" type="tel" placeholder="9876543210" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" required>
+            <div class="hint">10-digit Indian number only (no spaces, no +91)</div>
+          </div>
+          <button class="btn-submit" onclick="goStep(2)">Continue →</button>
+          <p style="text-align:center;font-size:12px;color:#9C9B96;margin-top:12px">Already have an account? <button onclick="switchTab('login')" style="background:none;border:none;color:#D85A30;font-weight:600;cursor:pointer;font-family:inherit;font-size:12px">Log in →</button></p>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="abox" id="signup-step-2" style="display:none">
+          <h2>Your creator profile</h2>
+          <p class="abox-sub">Step 2 of 3 — Social media & category</p>
+          <div class="fmsg" id="s2-msg"></div>
+          <div class="frow">
+            <div class="fg">
+              <label>Category *</label>
+              <select id="s-category" required>
+                <option value="">Select category</option>
+                <option>Food</option><option>Music</option><option>Fitness</option>
+                <option>Comedy</option><option>Tech</option><option>Gaming</option>
+                <option>Art</option><option>Travel</option><option>Education</option><option>Lifestyle</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Approx. followers</label>
+              <select id="s-followers">
+                <option value="10K-50K">10K – 50K</option>
+                <option value="50K-100K">50K – 100K</option>
+                <option value="100K-500K" selected>100K – 500K</option>
+                <option value="500K-1M">500K – 1M</option>
+                <option value="1M+">1M+</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Instagram handle *</label>
+            <input id="s-instagram" type="text" placeholder="yourhandle" maxlength="30" oninput="this.value=this.value.replace(/[^a-zA-Z0-9._]/g,'')" required>
+            <div class="hint">Letters, numbers, dots, underscores only · no @ symbol</div>
+          </div>
+          <div class="fg">
+            <label>YouTube channel URL <span style="font-weight:400;color:#9C9B96">(optional)</span></label>
+            <input id="s-youtube" type="url" placeholder="youtube.com/c/yourchannel">
+            <div class="hint">Must be a valid youtube.com URL</div>
+          </div>
+          <div class="fg"><label>Bio <span style="font-weight:400;color:#9C9B96">(optional)</span></label><textarea id="s-bio" placeholder="Tell fans about your content…" style="min-height:70px;resize:vertical"></textarea></div>
+          <button class="btn-submit" onclick="goStep(3)">Continue →</button>
+          <button class="btn-back" onclick="goStep(1)">← Back</button>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="abox" id="signup-step-3" style="display:none">
+          <h2>Experience & pricing</h2>
+          <p class="abox-sub">Step 3 of 3 — Almost done!</p>
+          <div class="fmsg" id="s3-msg"></div>
+          <div class="frow">
+            <div class="fg">
+              <label>Starting price (₹) *</label>
+              <input type="number" id="s-price" placeholder="e.g. 15000" min="2000" max="10000000" step="500" required>
+              <div class="hint">Min ₹2,000 · Max ₹1,00,00,000</div>
+            </div>
+            <div class="fg">
+              <label>City *</label>
+              <select id="s-city" required>
+                <option value="">Select your city</option>
+                <option>Hyderabad</option><option>Bangalore</option><option>Mumbai</option>
+                <option>Delhi</option><option>Chennai</option><option>Kolkata</option>
+                <option>Pune</option><option>Ahmedabad</option><option>Jaipur</option>
+                <option>Lucknow</option><option>Surat</option><option>Kochi</option>
+                <option>Chandigarh</option><option>Indore</option><option>Bhopal</option>
+                <option>Nagpur</option><option>Visakhapatnam</option><option>Coimbatore</option>
+                <option>Vadodara</option><option>Patna</option><option>Agra</option>
+                <option>Nashik</option><option>Ranchi</option><option>Thiruvananthapuram</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label>What experience do you offer fans? <span style="font-weight:400;color:#9C9B96">(optional)</span></label><textarea id="s-experience" placeholder="e.g. A cooking masterclass at my home, a 1-hr jam session…" style="min-height:70px;resize:vertical"></textarea></div>
+          <div class="fg" style="display:flex;align-items:center;gap:10px">
+            <input id="s-venue" type="checkbox" style="width:16px;height:16px;cursor:pointer;flex-shrink:0;accent-color:#D85A30">
+            <label for="s-venue" style="font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;color:#5C5B57;margin-bottom:0">I have access to a venue or space for experiences</label>
+          </div>
+          <button class="btn-submit" id="submit-btn" onclick="doSignup()">Submit application →</button>
+          <button class="btn-back" onclick="goStep(2)">← Back</button>
+          <p style="text-align:center;font-size:11px;color:#9C9B96;margin-top:10px">We review every application and reply on WhatsApp within 48 hrs</p>
+        </div>
+
+        <!-- SUCCESS -->
+        <div class="abox" id="signup-success" style="display:none">
+          <div class="success-state">
+            <div class="si">🎉</div>
+            <h3>Application submitted!</h3>
+            <p>Our team will review your profile and reply on WhatsApp within 48 hours. Once approved, come back here and log in.</p>
+            <button class="btn-submit" onclick="switchTab('login')" style="max-width:280px;margin:0 auto;display:block">Go to login →</button>
+          </div>
+        </div>
+
+      </div><!-- end signup panel -->
+
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://127.0.0.1:5000';
+let currentStep = 1;
+
+// ── TAB SWITCH ────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+  document.getElementById('panel-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  if (tab === 'signup') goStep(1);
+}
+
+// ── STEP INDICATOR ────────────────────────────────────────────────────────────
+function updateStepUI(n) {
+  currentStep = n;
+  [1,2,3].forEach(i => {
+    const dot = document.getElementById('sd' + i);
+    dot.className = 'si-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    dot.textContent = i < n ? '✓' : i;
+  });
+  [1,2].forEach(i => {
+    const line = document.getElementById('sl' + i);
+    if (line) line.className = 'si-line' + (i < n ? ' done' : '');
+  });
+  ['signup-step-1','signup-step-2','signup-step-3'].forEach((id, idx) => {
+    document.getElementById(id).style.display = (idx + 1 === n) ? 'block' : 'none';
+  });
+}
+
+// ── PASSWORD STRENGTH ─────────────────────────────────────────────────────────
+function checkPwStrength(pw) {
+  const fill  = document.getElementById('pw-fill');
+  const label = document.getElementById('pw-label');
+  let score = 0;
+  if (pw.length >= 8)          score++;
+  if (/[A-Z]/.test(pw))        score++;
+  if (/[0-9]/.test(pw))        score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const colors = ['#F87171','#F59E0B','#60A5FA','#97C459'];
+  const labels = ['Too weak','Fair','Good','Strong ✓'];
+  fill.style.width  = (score * 25) + '%';
+  fill.style.background = colors[score - 1] || '#E5E4E0';
+  label.textContent = score ? labels[score - 1] : 'Enter a password';
+  label.style.color = colors[score - 1] || '#9C9B96';
+}
+
+// ── VALIDATION ────────────────────────────────────────────────────────────────
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'fmsg err';
+}
+function clearErr(id) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = ''; el.className = 'fmsg'; }
+}
+function validEmail(e)  { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
+function validPhone(p)  { return /^[6-9]\d{9}$/.test(p); }
+function validInsta(h)  { return /^[a-zA-Z0-9._]{1,30}$/.test(h); }
+function validYT(u)     { if (!u) return true; return /youtube\.com\/(channel\/|c\/|user\/|@)?[a-zA-Z0-9_\-]+/.test(u); }
+
+function goStep(n) {
+  if (n === 2) {
+    clearErr('s1-msg');
+    const name  = document.getElementById('s-name').value.trim();
+    const email = document.getElementById('s-email').value.trim();
+    const pass  = document.getElementById('s-pass').value;
+    const phone = document.getElementById('s-phone').value.trim();
+    if (name.length < 2)      { showErr('s1-msg', 'Enter your full name (at least 2 characters).'); return; }
+    if (!validEmail(email))   { showErr('s1-msg', 'Enter a valid email address (e.g. you@gmail.com).'); return; }
+    if (pass.length < 8)      { showErr('s1-msg', 'Password must be at least 8 characters.'); return; }
+    if (!/[A-Z]/.test(pass))  { showErr('s1-msg', 'Password needs at least 1 uppercase letter.'); return; }
+    if (!/[0-9]/.test(pass))  { showErr('s1-msg', 'Password needs at least 1 number.'); return; }
+    if (!validPhone(phone))   { showErr('s1-msg', 'Enter a valid 10-digit Indian mobile number (starts with 6-9, no spaces).'); return; }
+  }
+  if (n === 3) {
+    clearErr('s2-msg');
+    const cat = document.getElementById('s-category').value;
+    const ig  = document.getElementById('s-instagram').value.trim();
+    const yt  = document.getElementById('s-youtube').value.trim();
+    if (!cat)              { showErr('s2-msg', 'Please select your content category.'); return; }
+    if (!validInsta(ig))   { showErr('s2-msg', 'Enter a valid Instagram handle (letters, numbers, dots, underscores only — no @).'); return; }
+    if (!validYT(yt))      { showErr('s2-msg', 'Enter a valid YouTube channel URL (e.g. youtube.com/c/yourchannel).'); return; }
+  }
+  updateStepUI(n);
+}
+
+// ── SUBMIT SIGNUP ─────────────────────────────────────────────────────────────
+async function doSignup() {
+  clearErr('s3-msg');
+  const price = parseInt(document.getElementById('s-price').value);
+  const city  = document.getElementById('s-city').value;
+  if (!price || price < 2000)   { showErr('s3-msg', 'Minimum starting price is ₹2,000.'); return; }
+  if (price > 10000000)         { showErr('s3-msg', 'Starting price seems too high. Please check.'); return; }
+  if (!city)                    { showErr('s3-msg', 'Please select your city.'); return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = 'Submitting…';
+
+  const res = await fetch(`${API}/api/creator/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name:        document.getElementById('s-name').value.trim(),
+      email:       document.getElementById('s-email').value.trim(),
+      password:    document.getElementById('s-pass').value,
+      phone:       document.getElementById('s-phone').value.trim(),
+      category:    document.getElementById('s-category').value,
+      followers:   document.getElementById('s-followers').value,
+      instagram:   document.getElementById('s-instagram').value.trim(),
+      youtube:     document.getElementById('s-youtube').value.trim(),
+      bio:         document.getElementById('s-bio').value.trim(),
+      price_from:  price,
+      city,
+      experience:  document.getElementById('s-experience').value.trim(),
+      has_venue:   document.getElementById('s-venue').checked
+    })
+  }).then(r => r.json()).catch(() => ({ success: false, message: 'Cannot connect to server.' }));
+
+  btn.disabled = false; btn.textContent = 'Submit application →';
+
+  if (res.success) {
+    ['signup-step-1','signup-step-2','signup-step-3'].forEach(id => document.getElementById(id).style.display = 'none');
+    document.getElementById('signup-success').style.display = 'block';
+    document.querySelector('.steps-ind').style.display = 'none';
+  } else {
+    showErr('s3-msg', res.message);
+  }
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const btn = document.getElementById('login-btn');
+  const msg = document.getElementById('login-msg');
+  msg.className = 'fmsg'; msg.textContent = '';
+
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+  if (!email || !pass) { msg.textContent = 'Please fill in both fields.'; msg.className = 'fmsg err'; return; }
+
+  btn.disabled = true; btn.textContent = 'Logging in…';
+
+  const res = await fetch(`${API}/api/creator/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password: pass })
+  }).then(r => r.json()).catch(() => ({ success: false, message: 'Cannot connect to server.' }));
+
+  btn.disabled = false; btn.textContent = 'Log in to dashboard →';
+
+  if (res.success) {
+    localStorage.setItem('sc_token', res.token);
+    localStorage.setItem('sc_creator', JSON.stringify(res.creator));
+    window.location.href = '/creator/dashboard.html';
+  } else {
+    msg.textContent = res.message;
+    msg.className = 'fmsg err';
+  }
+}
+
+// Enter key on login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('panel-login').classList.contains('active')) {
+    doLogin();
+  }
+});
+
+// Check if already logged in
+if (localStorage.getItem('sc_token') && localStorage.getItem('sc_creator')) {
+  window.location.href = '/creator/dashboard.html';
+}
+</script>
+</body>
+</html>

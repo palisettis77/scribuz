@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book an Experience — ScriBuz</title>
+  <link rel="stylesheet" href="/fan/style.css">
+</head>
+<body onload="initBook()">
+<nav>
+  <div class="nav-inner">
+    <a href="/fan/index.html" class="logo"><span class="scri">Scri</span><span class="buz">Buz</span></a>
+    <div class="nav-actions" id="nav-actions"></div>
+  </div>
+</nav>
+
+<div class="book-page">
+  <a href="/fan/browse.html" style="font-size:13px;color:var(--text2);display:inline-block;margin-bottom:12px">← Back to browse</a>
+  <h1 style="font-size:1.8rem;font-weight:700;letter-spacing:-.75px;margin-bottom:8px">Request a Booking</h1>
+  <p style="color:var(--text2);font-size:14px;margin-bottom:24px">The creator will review your request and respond within 24 hours.</p>
+
+  <div class="book-creator-mini" id="book-creator">
+    <div class="bcm-av bg1">⭐</div>
+    <div><div style="font-size:15px;font-weight:600">Loading creator…</div></div>
+  </div>
+
+  <div class="fmsg" id="book-msg"></div>
+
+  <form id="book-form">
+    <div class="fg">
+      <label>Type of Experience *</label>
+      <select id="b-type" required>
+        <option value="">What kind of experience?</option>
+        <option>Private Dinner / Cooking Session</option>
+        <option>Private Concert / Music Session</option>
+        <option>Personal Training Session</option>
+        <option>Private Standup / Comedy Show</option>
+        <option>Tech Workshop / Mentoring</option>
+        <option>Art Workshop</option>
+        <option>Gaming Session / LAN Party</option>
+        <option>City Tour / Day Trip</option>
+        <option>Wedding Appearance</option>
+        <option>Corporate / Team Event</option>
+        <option>Shop Opening / Launch Event</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="frow">
+      <div class="fg"><label>Preferred Date *</label><input id="b-date" type="date" required></div>
+      <div class="fg"><label>Number of Guests *</label><input id="b-guests" type="number" min="1" max="50" value="2" required></div>
+    </div>
+    <div class="fg">
+      <label>Your Budget *</label>
+      <select id="b-budget" required>
+        <option value="10000">₹10,000 – ₹20,000</option>
+        <option value="20000">₹20,000 – ₹35,000</option>
+        <option value="35000" selected>₹35,000 – ₹60,000</option>
+        <option value="60000">₹60,000 – ₹1,00,000</option>
+        <option value="100000">₹1,00,000+</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Your Message to the Creator</label>
+      <textarea id="b-msg" placeholder="Tell the creator why this experience means something to you. The more personal, the better your chances of getting a yes."></textarea>
+    </div>
+
+    <div style="background:var(--bg2);border-radius:var(--rl);padding:18px;margin-bottom:20px;border:1.5px solid var(--border)">
+      <h4 style="font-size:13px;font-weight:600;margin-bottom:10px">🛡️ How payment works</h4>
+      <div style="font-size:13px;color:var(--text2);display:flex;flex-direction:column;gap:6px">
+        <div>✅ You pay <strong>after</strong> the creator accepts your request</div>
+        <div>✅ Payment is held in escrow until the experience happens</div>
+        <div>✅ Creator gets paid 24 hours after completion</div>
+        <div>✅ Full refund if creator cancels — guaranteed</div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-large btn-full">Send Booking Request</button>
+    <p style="text-align:center;font-size:12px;color:var(--text3);margin-top:10px">No payment now. You pay only after the creator accepts.</p>
+  </form>
+</div>
+
+<footer id="footer"></footer>
+<div id="toast" class="toast"></div>
+<script src="/fan/script.js"></script>
+<script>
+// Override the booking success redirect to go to payment page
+(function() {
+  // Check login on page load — redirect if not logged in
+  const tokenCheck = localStorage.getItem('sb_token') || localStorage.getItem('sc_token') || localStorage.getItem('token');
+  if (!tokenCheck) {
+    const returnUrl = encodeURIComponent(window.location.href);
+    window.location.href = '/fan/login.html?return=' + returnUrl;
+    return;
+  }
+
+  const form = document.getElementById('book-form');
+  if (!form) return;
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    // sb_token is what fan/script.js uses
+    const token = localStorage.getItem('sb_token') || localStorage.getItem('sc_token') || localStorage.getItem('token');
+    if (!token) { window.location.href = '/fan/login.html'; return; }
+
+    const params = new URLSearchParams(window.location.search);
+    const cid    = params.get('id');
+    if (!cid) return;
+
+    const btn = form.querySelector('[type=submit]');
+    btn.disabled = true;
+    btn.textContent = 'Sending request…';
+
+    const res = await fetch('http://127.0.0.1:5000/api/book', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        creator_id: parseInt(cid),
+        event_type: document.getElementById('b-type').value,
+        event_date: document.getElementById('b-date').value,
+        guests:     parseInt(document.getElementById('b-guests').value),
+        budget:     parseInt(document.getElementById('b-budget').value),
+        message:    document.getElementById('b-msg').value
+      })
+    }).then(r => r.json()).catch(() => ({ success: false, message: 'Network error' }));
+
+    btn.disabled = false;
+    btn.textContent = 'Send Booking Request';
+
+    if (res.success) {
+      // ✅ Redirect to payment page instead of account page
+      window.location.href = '/fan/payment.html?booking_id=' + res.booking_id;
+    } else {
+      const msg = document.getElementById('book-msg');
+      msg.textContent = res.message;
+      msg.className   = 'fmsg err';
+      msg.style.display = 'block';
+    }
+  }, true); // capture phase so it runs before script.js handler
+})();
+</script>
+</body>
+</html>
