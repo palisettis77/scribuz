@@ -1206,4 +1206,4 @@ if __name__ == '__main__':
     print('Creator site: http://127.0.0.1:5000/creator/auth.html')
     print('Admin site:   http://127.0.0.1:5000/admin/')
     print('Health:       http://127.0.0.1:5000/api/health')
-    app.run(host='0.0.0.0', debug=False, port=5000, use_reloader=False)
+    app.run(host='0.0.0.0', debug=False, port=5000, use_reloader=False)# redeploy
