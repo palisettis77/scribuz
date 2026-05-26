@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — ScriBuz</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    body { background: var(--bg2); }
+
+    .contact-page {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 7rem 2rem 5rem;
+    }
+    .contact-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .contact-header h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+    }
+    .contact-header p {
+      font-size: 16px;
+      color: var(--text2);
+      max-width: 420px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* ── FORM ── */
+    .contact-form-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+    .contact-form-card h2 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+    .contact-form-card .sub {
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 1.75rem;
+    }
+
+    .cf-group { margin-bottom: 1rem; }
+    .cf-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text2);
+      margin-bottom: 5px;
+    }
+    .cf-group input,
+    .cf-group select,
+    .cf-group textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: 0.2s;
+    }
+    .cf-group input:focus,
+    .cf-group select:focus,
+    .cf-group textarea:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(216,90,48,0.08);
+    }
+    .cf-group textarea { min-height: 120px; resize: vertical; }
+    .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .cf-submit {
+      width: 100%;
+      padding: 13px;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 0.25rem;
+      box-shadow: 0 4px 20px rgba(216,90,48,0.25);
+    }
+    .cf-submit:hover { background: var(--od); transform: translateY(-1px); }
+
+    .cf-success {
+      display: none;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .cf-success .si { font-size: 44px; margin-bottom: 1rem; }
+    .cf-success h3 { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 0.5rem; }
+    .cf-success p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+
+    /* ── SIDEBAR ── */
+    .contact-sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .contact-info-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .contact-info-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+    }
+    .contact-method {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .contact-method:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .cm-icon {
+      width: 40px; height: 40px;
+      background: #FAECE7;
+      border: 1px solid #F0997B;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .cm-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text3);
+      margin-bottom: 2px;
+    }
+    .cm-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .cm-value a { color: var(--orange); }
+    .cm-note { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+    .contact-hours-card {
+      background: var(--text);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+    }
+    .contact-hours-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+    }
+    .hours-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .hours-row:last-child { border-bottom: none; }
+    .hours-day { color: rgba(255,255,255,0.5); }
+    .hours-time { color: #fff; font-weight: 600; }
+    .hours-time.closed { color: rgba(255,255,255,0.25); }
+
+    .faq-quick {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .faq-quick h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+    .faq-quick-item {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .faq-quick-item:last-child { border-bottom: none; }
+    .faq-quick-item a {
+      font-size: 13px;
+      color: var(--text2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.15s;
+    }
+    .faq-quick-item a:hover { color: var(--orange); }
+    .faq-quick-item a::after { content: '→'; color: var(--orange); font-size: 12px; }
+
+    @media (max-width: 860px) {
+      .contact-grid { grid-template-columns: 1fr; }
+      .contact-sidebar { order: -1; }
+    }
+    @media (max-width: 560px) {
+      .cf-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">Scri<span>Buz</span></a>
+    <div class="nav-links">
+      <a href="browse.html">Browse</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="apply.html">For Creators</a>
+    </div>
+    <div class="nav-right">
+      <a href="login.html" class="btn-ghost">Log in</a>
+      <a href="signup.html" class="btn-fill">Get started</a>
+    </div>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="browse.html">Browse creators</a>
+    <a href="how-it-works.html">How it works</a>
+    <a href="apply.html">I'm a creator</a>
+    <a href="login.html">Log in</a>
+    <a href="signup.html" class="btn-fill-mobile">Get started</a>
+  </div>
+</nav>
+
+<div class="contact-page">
+
+  <div class="contact-header">
+    <div class="section-label" style="margin-bottom:0.75rem;">Get in touch</div>
+    <h1>We'd love to<br>hear from you</h1>
+    <p>Questions, feedback, creator applications — we reply to everything within 48 hours.</p>
+  </div>
+
+  <div class="contact-grid">
+
+    <!-- FORM -->
+    <div class="contact-form-card">
+      <h2>Send us a message</h2>
+      <p class="sub">We'll get back to you within 48 hours on WhatsApp or email.</p>
+
+      <div class="cf-success" id="cfSuccess">
+        <div class="si">✅</div>
+        <h3>Message sent!</h3>
+        <p>We'll get back to you within 48 hours. For urgent queries WhatsApp us directly at +91 99999 99999.</p>
+      </div>
+
+      <form id="contactForm" onsubmit="submitContact(event)">
+        <div class="cf-row">
+          <div class="cf-group">
+            <label>Your name</label>
+            <input type="text" id="cfName" placeholder="Arjun Reddy" required>
+          </div>
+          <div class="cf-group">
+            <label>Email</label>
+            <input type="email" id="cfEmail" placeholder="you@email.com" required>
+          </div>
+        </div>
+        <div class="cf-group">
+          <label>I am a...</label>
+          <select id="cfType">
+            <option value="fan">Fan looking to book</option>
+            <option value="creator">Creator wanting to join</option>
+            <option value="business">Business / Brand</option>
+            <option value="media">Media / Press</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="cf-group">
+          <label>Subject</label>
+          <input type="text" id="cfSubject" placeholder="What's this about?">
+        </div>
+        <div class="cf-group">
+          <label>Message</label>
+          <textarea id="cfMessage" placeholder="Tell us what's on your mind..." required></textarea>
+        </div>
+        <button type="submit" class="cf-submit">Send message →</button>
+      </form>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="contact-sidebar">
+
+      <!-- CONTACT METHODS -->
+      <div class="contact-info-card">
+        <h3>Contact methods</h3>
+        <div class="contact-method">
+          <div class="cm-icon">📧</div>
+          <div>
+            <div class="cm-label">Email</div>
+            <div class="cm-value"><a href="mailto:hello@scribuz.in">hello@scribuz.in</a></div>
+            <div class="cm-note">We reply within 48 hours</div>
+          </div>
+        </div>
+        <div class="contact-method">
+          <div class="cm-icon">💬</div>
+          <div>
+            <div class="cm-label">WhatsApp</div>
+            <div class="cm-value"><a href="https://wa.me/919999999999">+91 99999 99999</a></div>
+            <div class="cm-note">Fastest way to reach us</div>
+          </div>
+        </div>
+        <div class="contact-method">
+          <div class="cm-icon">📸</div>
+          <div>
+            <div class="cm-label">Instagram</div>
+            <div class="cm-value"><a href="https://instagram.com/scribuz.in" target="_blank">@scribuz.in</a></div>
+            <div class="cm-note">DMs open</div>
+          </div>
+        </div>
+        <div class="contact-method">
+          <div class="cm-icon">📍</div>
+          <div>
+            <div class="cm-label">Location</div>
+            <div class="cm-value">Hyderabad, Telangana</div>
+            <div class="cm-note">India · Phase 1</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HOURS -->
+      <div class="contact-hours-card">
+        <h3>Support hours</h3>
+        <div class="hours-row">
+          <span class="hours-day">Monday – Friday</span>
+          <span class="hours-time">10am – 7pm</span>
+        </div>
+        <div class="hours-row">
+          <span class="hours-day">Saturday</span>
+          <span class="hours-time">11am – 5pm</span>
+        </div>
+        <div class="hours-row">
+          <span class="hours-day">Sunday</span>
+          <span class="hours-time closed">Closed</span>
+        </div>
+        <div style="margin-top:1rem;font-size:11px;color:rgba(255,255,255,0.3);line-height:1.6;">
+          All times IST · For urgent booking issues WhatsApp us any time
+        </div>
+      </div>
+
+      <!-- QUICK FAQ -->
+      <div class="faq-quick">
+        <h3>Quick answers</h3>
+        <div class="faq-quick-item">
+          <a href="how-it-works.html">How does booking work?</a>
+        </div>
+        <div class="faq-quick-item">
+          <a href="terms.html#cancellation">What's the cancellation policy?</a>
+        </div>
+        <div class="faq-quick-item">
+          <a href="apply.html">How do I apply as a creator?</a>
+        </div>
+        <div class="faq-quick-item">
+          <a href="privacy.html">How is my data protected?</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="index.html" class="logo footer-logo">Scri<span>Buz</span></a>
+      <p>Where fans meet creators. In person. For real.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <a href="browse.html">Browse creators</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="apply.html">Creator apply</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="about.html">About</a>
+      <a href="contact.html" style="color:var(--orange);">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="terms.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 ScriBuz · Hyderabad · hello@scribuz.in</span>
+    <div class="footer-legal">
+      <a href="terms.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../script.js"></script>
+<script>
+  function submitContact(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.cf-submit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Sending...';
+    setTimeout(() => {
+      document.getElementById('contactForm').style.display = 'none';
+      document.getElementById('cfSuccess').style.display = 'block';
+    }, 1500);
+  }
+</script>
+</body>
+</html>

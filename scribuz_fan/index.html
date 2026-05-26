@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScriBuz — Meet Your Favourite Creator In Person</title>
+  <meta name="description" content="Book private, in-person experiences with the YouTube and Instagram creators you love. Food, music, fitness, comedy and more. Hyderabad's first creator experience platform.">
+  <meta property="og:title" content="ScriBuz — Meet Your Favourite Creator In Person">
+  <meta property="og:description" content="Turn your subscription into a seat at the table. Private experiences with verified creators — escrow protected.">
+  <link rel="stylesheet" href="/fan/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', -apple-system, sans-serif; }
+
+    /* ── HERO ── */
+    .ph { min-height: 100vh; background: #0c0c0a; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 110px 2rem 80px; position: relative; overflow: hidden; }
+    .ph-noise { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events: none; }
+    .ph-orb1 { position: absolute; top: -120px; left: 50%; transform: translateX(-50%); width: 800px; height: 500px; background: radial-gradient(ellipse, rgba(216,90,48,.12) 0%, transparent 65%); pointer-events: none; }
+    .ph-orb2 { position: absolute; bottom: -80px; left: 20%; width: 400px; height: 300px; background: radial-gradient(ellipse, rgba(216,90,48,.06) 0%, transparent 70%); pointer-events: none; }
+    .ph-orb3 { position: absolute; top: 20%; right: 10%; width: 300px; height: 300px; background: radial-gradient(ellipse, rgba(99,102,241,.05) 0%, transparent 70%); pointer-events: none; }
+
+    .ph-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(216,90,48,.1); border: 1px solid rgba(216,90,48,.25); color: #F0997B; font-size: 11px; font-weight: 600; padding: 6px 16px; border-radius: 100px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 32px; position: relative; }
+    .ph-eyebrow-dot { width: 5px; height: 5px; border-radius: 50%; background: #F0997B; animation: phblink 2s ease infinite; }
+    @keyframes phblink { 0%,100%{opacity:.3;transform:scale(.7)} 50%{opacity:1;transform:scale(1)} }
+
+    .ph-h1 { font-size: clamp(3rem, 8vw, 7rem); font-weight: 900; letter-spacing: -4px; line-height: .95; color: #fff; margin-bottom: 28px; position: relative; max-width: 820px; }
+    .ph-h1 em { font-style: normal; background: linear-gradient(135deg, #D85A30 0%, #F0997B 50%, #D85A30 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: phshine 4s linear infinite; }
+    @keyframes phshine { to { background-position: 200% center; } }
+
+    .ph-p { font-size: 17px; color: rgba(255,255,255,.45); max-width: 480px; line-height: 1.8; margin-bottom: 44px; font-weight: 400; position: relative; }
+
+    .ph-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; position: relative; }
+    .ph-btn-a { display: inline-flex; align-items: center; gap: 8px; padding: 15px 36px; background: #D85A30; color: #fff; border-radius: 100px; font-size: 15px; font-weight: 700; border: none; cursor: pointer; transition: all .25s; box-shadow: 0 0 0 0 rgba(216,90,48,.4); letter-spacing: -.2px; text-decoration: none; }
+    .ph-btn-a:hover { background: #c24d25; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(216,90,48,.5); }
+    .ph-btn-b { display: inline-flex; align-items: center; gap: 8px; padding: 15px 28px; background: transparent; color: rgba(255,255,255,.65); border-radius: 100px; font-size: 15px; font-weight: 500; border: 1px solid rgba(255,255,255,.12); cursor: pointer; transition: all .25s; text-decoration: none; }
+    .ph-btn-b:hover { background: rgba(255,255,255,.06); color: #fff; border-color: rgba(255,255,255,.25); }
+
+    /* HERO SEARCH */
+    .ph-search { position: relative; width: 100%; max-width: 480px; margin: 0 auto 48px; }
+    .ph-search-inp { width: 100%; padding: 16px 58px 16px 22px; border-radius: 100px; border: 1.5px solid rgba(255,255,255,.15); background: rgba(255,255,255,.08); color: #fff; font-size: 15px; font-family: inherit; outline: none; backdrop-filter: blur(10px); transition: .2s; }
+    .ph-search-inp::placeholder { color: rgba(255,255,255,.4); }
+    .ph-search-inp:focus { background: rgba(255,255,255,.13); border-color: rgba(216,90,48,.7); box-shadow: 0 0 0 3px rgba(216,90,48,.15); }
+    .ph-search-btn { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: #D85A30; border: none; border-radius: 100px; width: 44px; height: 44px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: .2s; color: #fff; }
+    .ph-search-btn:hover { background: #c24d25; transform: translateY(-50%) scale(1.05); }
+
+    /* AVATARS */
+    .ph-avatars { display: flex; align-items: center; gap: 0; margin-bottom: 16px; position: relative; }
+    .ph-av { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0c0c0a; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-left: -10px; transition: transform .2s; }
+    .ph-av:first-child { margin-left: 0; }
+    .ph-av:hover { transform: scale(1.15) translateY(-3px); z-index: 5; }
+    .ph-av-label { font-size: 13px; color: rgba(255,255,255,.4); margin-left: 14px; font-weight: 400; }
+
+    /* STATS */
+    .ph-stats { display: flex; gap: 48px; position: relative; }
+    .ph-stat-n { font-size: 1.5rem; font-weight: 800; color: #fff; letter-spacing: -1px; line-height: 1; }
+    .ph-stat-l { font-size: 11px; color: rgba(255,255,255,.3); text-transform: uppercase; letter-spacing: .1em; margin-top: 4px; }
+
+    /* ── TICKER ── */
+    .tick { overflow: hidden; background: #D85A30; padding: 14px 0; }
+    .tick-inner { display: flex; animation: tickscroll 30s linear infinite; }
+    .tick-item { font-size: 13px; color: #fff; font-weight: 700; padding: 0 32px; white-space: nowrap; letter-spacing: .02em; }
+    .tick-item::after { content: '·'; margin-left: 32px; opacity: .5; }
+    @keyframes tickscroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ── TRUST LOGOS ── */
+    .trust { padding: 52px 2rem; background: #fff; border-bottom: 1px solid #f0efeb; }
+    .trust-inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; gap: 40px; flex-wrap: wrap; justify-content: center; }
+    .trust-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: #c4c3be; white-space: nowrap; }
+    .trust-items { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; justify-content: center; }
+    .trust-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #9c9b96; letter-spacing: -.2px; }
+    .trust-item span { font-size: 18px; }
+
+    /* ── FEATURED ── */
+    .feat { padding: 96px 2rem; background: #fff; }
+    .feat-inner { max-width: 1200px; margin: 0 auto; }
+    .feat-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px; flex-wrap: wrap; gap: 16px; }
+    .feat-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: #D85A30; margin-bottom: 8px; }
+    .feat-title { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; color: #1A1A18; }
+    .feat-sub { font-size: 15px; color: #5C5B57; margin-top: 8px; font-weight: 400; }
+
+    /* ── HOW IT WORKS ── */
+    .hiw { padding: 96px 2rem; background: #0c0c0a; }
+    .hiw-inner { max-width: 1000px; margin: 0 auto; }
+    .hiw-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: #F0997B; margin-bottom: 16px; }
+    .hiw-title { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; letter-spacing: -2px; color: #fff; margin-bottom: 16px; line-height: 1.05; }
+    .hiw-sub { font-size: 16px; color: rgba(255,255,255,.4); max-width: 480px; line-height: 1.7; margin-bottom: 64px; }
+    .hiw-steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: rgba(255,255,255,.06); border-radius: 20px; overflow: hidden; }
+    .hiw-step { background: #0c0c0a; padding: 40px 32px; position: relative; transition: background .2s; }
+    .hiw-step:hover { background: #141412; }
+    .hiw-step-n { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.2); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 24px; }
+    .hiw-step-icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
+    .hiw-step-t { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 10px; letter-spacing: -.3px; }
+    .hiw-step-d { font-size: 14px; color: rgba(255,255,255,.4); line-height: 1.7; }
+    .hiw-step-badge { display: inline-block; margin-top: 16px; padding: 4px 12px; background: rgba(216,90,48,.15); border: 1px solid rgba(216,90,48,.25); border-radius: 100px; font-size: 11px; font-weight: 600; color: #F0997B; }
+    .hiw-cta { margin-top: 48px; text-align: center; }
+
+    /* ── CATEGORIES ── */
+    .cats { padding: 96px 2rem; background: #fafaf8; }
+    .cats-inner { max-width: 1100px; margin: 0 auto; }
+    .cats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 10px; margin-top: 40px; }
+    .cat-item { display: flex; align-items: center; gap: 12px; padding: 16px 18px; background: #fff; border: 1.5px solid #e5e4e0; border-radius: 14px; font-size: 14px; font-weight: 600; color: #1A1A18; cursor: pointer; transition: all .2s; text-decoration: none; }
+    .cat-item:hover { border-color: #D85A30; background: #FAECE7; color: #993C1D; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(216,90,48,.12); }
+    .cat-item-emoji { font-size: 20px; width: 36px; height: 36px; border-radius: 10px; background: #f3f2ef; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    /* ── TESTIMONIALS ── */
+    .testi { padding: 96px 2rem; background: #fff; }
+    .testi-inner { max-width: 1100px; margin: 0 auto; }
+    .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 48px; }
+    .testi-c { background: #fafaf8; border: 1.5px solid #e5e4e0; border-radius: 20px; padding: 32px; transition: .2s; }
+    .testi-c:hover { border-color: #D85A30; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(216,90,48,.08); }
+    .testi-c:nth-child(1) { border-top: 3px solid #6366F1; }
+    .testi-c:nth-child(2) { border-top: 3px solid #D85A30; }
+    .testi-c:nth-child(3) { border-top: 3px solid #059669; }
+    .testi-c:nth-child(4) { border-top: 3px solid #7C3AED; }
+    .testi-c:nth-child(5) { border-top: 3px solid #D85A30; }
+    .testi-c:nth-child(6) { border-top: 3px solid #0891B2; }
+    .testi-stars { color: #F59E0B; font-size: 13px; letter-spacing: 2px; margin-bottom: 16px; }
+    .testi-q { font-size: 15px; color: #1A1A18; line-height: 1.75; margin-bottom: 24px; font-weight: 400; }
+    .testi-q::before { content: '"'; font-size: 2rem; color: #e5e4e0; line-height: 0; vertical-align: -12px; margin-right: 2px; }
+    .testi-au { display: flex; align-items: center; gap: 12px; }
+    .testi-aui { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .testi-aun { font-size: 13px; font-weight: 700; color: #1A1A18; }
+    .testi-aus { font-size: 11px; color: #9c9b96; margin-top: 1px; }
+
+    /* ── DUAL VALUE ── */
+    .dual { padding: 96px 2rem; background: #0c0c0a; }
+    .dual-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .dual-card { border-radius: 24px; padding: 48px; border: 1px solid rgba(255,255,255,.06); position: relative; overflow: hidden; }
+    .dual-card-fan { background: linear-gradient(135deg, #0f0f0d 0%, #131116 100%); }
+    .dual-card-creator { background: linear-gradient(135deg, #1a0f09 0%, #1f1208 100%); }
+    .dual-glow-fan { position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(99,102,241,.12), transparent 70%); }
+    .dual-glow-creator { position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(216,90,48,.15), transparent 70%); }
+    .dual-tag { display: inline-block; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 24px; }
+    .dual-tag-fan { background: rgba(99,102,241,.15); border: 1px solid rgba(99,102,241,.25); color: #A5B4FC; }
+    .dual-tag-creator { background: rgba(216,90,48,.15); border: 1px solid rgba(216,90,48,.25); color: #F0997B; }
+    .dual-title { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: -.75px; margin-bottom: 12px; line-height: 1.2; }
+    .dual-desc { font-size: 14px; color: rgba(255,255,255,.45); line-height: 1.8; margin-bottom: 32px; }
+    .dual-perks { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+    .dual-perk { display: flex; align-items: center; gap: 12px; font-size: 13px; color: rgba(255,255,255,.6); }
+    .dual-perk-dot { width: 5px; height: 5px; border-radius: 50%; background: #F0997B; flex-shrink: 0; }
+    .dual-perk-dot-fan { background: #A5B4FC; }
+    .dual-btn-fan { display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; background: rgba(99,102,241,.15); border: 1.5px solid rgba(99,102,241,.3); color: #A5B4FC; border-radius: 100px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .2s; text-decoration: none; }
+    .dual-btn-fan:hover { background: rgba(99,102,241,.25); color: #fff; }
+    .dual-btn-creator { display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; background: #D85A30; border: none; color: #fff; border-radius: 100px; font-size: 14px; font-weight: 700; cursor: pointer; transition: .2s; text-decoration: none; }
+    .dual-btn-creator:hover { background: #c24d25; transform: translateY(-1px); }
+
+    /* ── SAFETY ── */
+    .safety { padding: 80px 2rem; background: #fafaf8; border-top: 1px solid #e5e4e0; border-bottom: 1px solid #e5e4e0; }
+    .safety-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 32px; }
+    .saf-item { display: flex; align-items: flex-start; gap: 16px; }
+    .saf-icon { width: 44px; height: 44px; border-radius: 12px; background: #FAECE7; border: 1px solid #F0997B; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .saf-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .saf-desc { font-size: 13px; color: #5C5B57; line-height: 1.6; }
+
+    /* ── WAITLIST ── */
+    .wl { padding: 96px 2rem; background: #fff; }
+    .wl-inner { max-width: 560px; margin: 0 auto; text-align: center; }
+    .wl-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: #D85A30; margin-bottom: 16px; }
+    .wl-title { font-size: clamp(2rem,4vw,3rem); font-weight: 800; letter-spacing: -1.5px; color: #1A1A18; margin-bottom: 14px; line-height: 1.1; }
+    .wl-sub { font-size: 15px; color: #5C5B57; line-height: 1.7; margin-bottom: 36px; }
+    .wl-form { display: flex; gap: 8px; max-width: 440px; margin: 0 auto 16px; }
+    .wl-inp { flex: 1; padding: 14px 18px; border: 1.5px solid #e5e4e0; border-radius: 100px; background: #fafaf8; color: #1A1A18; font-size: 14px; outline: none; font-family: inherit; transition: .2s; }
+    .wl-inp:focus { border-color: #D85A30; background: #fff; box-shadow: 0 0 0 3px rgba(216,90,48,.08); }
+    .wl-btn { padding: 14px 28px; background: #D85A30; color: #fff; border: none; border-radius: 100px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: .2s; white-space: nowrap; }
+    .wl-btn:hover { background: #c24d25; }
+    .wl-note { font-size: 12px; color: #9c9b96; }
+    .wl-success { display: none; margin-top: 16px; background: #EAF3DE; border: 1px solid #97C459; color: #27500A; padding: 13px 20px; border-radius: 100px; font-size: 14px; font-weight: 600; }
+
+    /* RESPONSIVE */
+    @media(max-width:960px) {
+      .hiw-steps,.dual-inner { grid-template-columns: 1fr; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .safety-inner { grid-template-columns: 1fr; gap: 20px; }
+    }
+    @media(max-width:700px) {
+      .ph-h1 { font-size: 2.8rem; letter-spacing: -2px; }
+      .ph-stats { gap: 24px; flex-wrap: wrap; justify-content: center; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .cats-grid { grid-template-columns: 1fr 1fr; }
+      .wl-form { flex-direction: column; }
+    }
+  </style>
+</head>
+<body onload="initHome()">
+
+<!-- NAV -->
+<nav style="background:rgba(12,12,10,.97);border-bottom:1px solid rgba(255,255,255,.06);backdrop-filter:blur(20px)">
+  <div class="nav-inner">
+    <a href="/fan/index.html" class="logo"><span style="color:#fff">Scri</span><span class="buz">Buz</span></a>
+    <div class="nav-links">
+      <a href="/fan/browse.html"       class="nav-link" style="color:rgba(255,255,255,.5)">Browse</a>
+      <a href="/fan/how-it-works.html" class="nav-link" style="color:rgba(255,255,255,.5)">How It Works</a>
+      <a href="/fan/about.html"        class="nav-link" style="color:rgba(255,255,255,.5)">About</a>
+    </div>
+    <div class="nav-actions" id="nav-actions"></div>
+  </div>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="ph">
+  <div class="ph-noise"></div>
+  <div class="ph-orb1"></div>
+  <div class="ph-orb2"></div>
+  <div class="ph-orb3"></div>
+
+  <div class="ph-eyebrow">
+    <div class="ph-eyebrow-dot"></div>
+    Now live · Hyderabad · Phase 1
+  </div>
+
+  <h1 class="ph-h1">
+    You subscribed.<br><em>Now meet them.</em>
+  </h1>
+
+  <p class="ph-p">Book private, in-person experiences with the YouTube and Instagram creators you've followed for years. Food, music, fitness, comedy and more.</p>
+
+  <div class="ph-actions">
+    <a href="/fan/browse.html" class="ph-btn-a">Browse creators →</a>
+    <a href="/fan/how-it-works.html" class="ph-btn-b">How it works</a>
+  </div>
+
+  <!-- CREATOR SEARCH -->
+  <div class="ph-search">
+    <input
+      id="hero-search"
+      class="ph-search-inp"
+      type="text"
+      placeholder="🔍  Search by creator name…"
+      autocomplete="off"
+      onkeydown="if(event.key==='Enter')doHeroSearch()"
+    >
+    <button class="ph-search-btn" onclick="doHeroSearch()">→</button>
+  </div>
+
+  <div class="ph-avatars">
+    <div class="ph-av bg1">👨‍🍳</div>
+    <div class="ph-av bg2">🎸</div>
+    <div class="ph-av bg3">💪</div>
+    <div class="ph-av bg4">🎭</div>
+    <div class="ph-av bg5">💻</div>
+    <div class="ph-av bg6">🎨</div>
+    <span class="ph-av-label">30+ verified creators in Hyderabad</span>
+  </div>
+
+  <div class="ph-stats">
+    <div><div class="ph-stat-n">30+</div><div class="ph-stat-l">Creators</div></div>
+    <div><div class="ph-stat-n">₹8K</div><div class="ph-stat-l">From</div></div>
+    <div><div class="ph-stat-n">8</div><div class="ph-stat-l">Categories</div></div>
+    <div><div class="ph-stat-n">100%</div><div class="ph-stat-l">Escrow safe</div></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="tick">
+  <div class="tick-inner">
+    <span class="tick-item">Private Dinners</span><span class="tick-item">Intimate Concerts</span>
+    <span class="tick-item">Personal Training</span><span class="tick-item">Comedy Shows</span>
+    <span class="tick-item">Art Workshops</span><span class="tick-item">Gaming Sessions</span>
+    <span class="tick-item">Tech Masterclasses</span><span class="tick-item">City Tours</span>
+    <span class="tick-item">Corporate Events</span><span class="tick-item">Wedding Appearances</span>
+    <span class="tick-item">Cooking Classes</span><span class="tick-item">Mentoring Sessions</span>
+    <span class="tick-item">Private Dinners</span><span class="tick-item">Intimate Concerts</span>
+    <span class="tick-item">Personal Training</span><span class="tick-item">Comedy Shows</span>
+    <span class="tick-item">Art Workshops</span><span class="tick-item">Gaming Sessions</span>
+    <span class="tick-item">Tech Masterclasses</span><span class="tick-item">City Tours</span>
+    <span class="tick-item">Corporate Events</span><span class="tick-item">Wedding Appearances</span>
+    <span class="tick-item">Cooking Classes</span><span class="tick-item">Mentoring Sessions</span>
+  </div>
+</div>
+
+<!-- TRUST -->
+<div class="trust">
+  <div class="trust-inner">
+    <span class="trust-label">Platform trust</span>
+    <div class="trust-items">
+      <div class="trust-item"><span>🪪</span> ID Verified Creators</div>
+      <div class="trust-item"><span>🔒</span> Razorpay Escrow</div>
+      <div class="trust-item"><span>↩️</span> Full Refund Guarantee</div>
+      <div class="trust-item"><span>💬</span> In-App Secure Chat</div>
+      <div class="trust-item"><span>📞</span> WhatsApp Support</div>
+      <div class="trust-item"><span>⭐</span> Two-Way Reviews</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FEATURED CREATORS ═══════════ -->
+<section class="feat">
+  <div class="feat-inner">
+    <div class="feat-head">
+      <div>
+        <div class="feat-eyebrow">Featured this week</div>
+        <h2 class="feat-title">Creators ready<br>to meet you</h2>
+        <p class="feat-sub">All verified · All in Hyderabad · All bookable today</p>
+      </div>
+      <a href="/fan/browse.html" class="btn btn-outline" style="flex-shrink:0">View all creators →</a>
+    </div>
+    <div class="creators-grid" id="featured-grid">
+      <div class="empty-state"><div class="spinner"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ HOW IT WORKS ═══════════ -->
+<section class="hiw">
+  <div class="hiw-inner">
+    <div class="hiw-label">How it works</div>
+    <h2 class="hiw-title">Three steps to<br>the experience of a lifetime</h2>
+    <p class="hiw-sub">No complicated process. No hidden fees. Just you, your creator, and a memory you'll never forget.</p>
+    <div class="hiw-steps">
+      <div class="hiw-step">
+        <div class="hiw-step-n">Step 01</div>
+        <span class="hiw-step-icon">🔍</span>
+        <div class="hiw-step-t">Browse &amp; choose</div>
+        <div class="hiw-step-d">Filter 30+ verified creators by category. Read their bio, check availability, see what experience they offer.</div>
+        <span class="hiw-step-badge">Free to browse</span>
+      </div>
+      <div class="hiw-step">
+        <div class="hiw-step-n">Step 02</div>
+        <span class="hiw-step-icon">🔒</span>
+        <div class="hiw-step-t">Book &amp; pay securely</div>
+        <div class="hiw-step-d">Send a booking request. Pay via UPI or card. Money sits in Razorpay escrow — released only after the experience.</div>
+        <span class="hiw-step-badge">100% escrow protected</span>
+      </div>
+      <div class="hiw-step">
+        <div class="hiw-step-n">Step 03</div>
+        <span class="hiw-step-icon">🎉</span>
+        <div class="hiw-step-t">Show up &amp; live it</div>
+        <div class="hiw-step-d">Meet your creator in real life. The algorithm disappears. What's left is two humans and one real moment.</div>
+        <span class="hiw-step-badge">Memory guaranteed</span>
+      </div>
+    </div>
+    <div class="hiw-cta">
+      <a href="/fan/browse.html" class="ph-btn-a" style="display:inline-flex;margin-top:0">Find your creator →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CATEGORIES ═══════════ -->
+<section class="cats">
+  <div class="cats-inner">
+    <div class="feat-eyebrow">Browse by category</div>
+    <h2 class="feat-title">Every kind of experience</h2>
+    <p style="font-size:15px;color:#5C5B57;margin-top:8px;font-weight:400">From food to fitness, music to mentoring — find the creator who matches your world.</p>
+    <div class="cats-grid">
+      <a href="/fan/browse.html?cat=Food"      class="cat-item"><div class="cat-item-emoji">👨‍🍳</div>Food &amp; Cooking</a>
+      <a href="/fan/browse.html?cat=Music"     class="cat-item"><div class="cat-item-emoji">🎸</div>Music &amp; Concerts</a>
+      <a href="/fan/browse.html?cat=Fitness"   class="cat-item"><div class="cat-item-emoji">💪</div>Fitness &amp; Training</a>
+      <a href="/fan/browse.html?cat=Comedy"    class="cat-item"><div class="cat-item-emoji">🎭</div>Comedy &amp; Standup</a>
+      <a href="/fan/browse.html?cat=Tech"      class="cat-item"><div class="cat-item-emoji">💻</div>Tech &amp; Mentoring</a>
+      <a href="/fan/browse.html?cat=Gaming"    class="cat-item"><div class="cat-item-emoji">🎮</div>Gaming</a>
+      <a href="/fan/browse.html?cat=Art"       class="cat-item"><div class="cat-item-emoji">🎨</div>Art &amp; Design</a>
+      <a href="/fan/browse.html?cat=Travel"    class="cat-item"><div class="cat-item-emoji">✈️</div>Travel &amp; Tours</a>
+      <a href="/fan/browse.html?cat=Education" class="cat-item"><div class="cat-item-emoji">📚</div>Education</a>
+      <a href="/fan/browse.html" class="cat-item" style="background:#FAECE7;border-color:#F0997B;color:#993C1D"><div class="cat-item-emoji" style="background:#fff">→</div>View all</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TESTIMONIALS ═══════════ -->
+<section class="testi">
+  <div class="testi-inner">
+    <div style="text-align:center;margin-bottom:8px">
+      <div class="feat-eyebrow" style="text-align:center">Real experiences</div>
+      <h2 class="feat-title" style="text-align:center">What fans are saying</h2>
+      <p style="font-size:15px;color:#5C5B57;margin-top:8px;text-align:center;font-weight:400">Genuine reviews from real ScriBuz bookings in Hyderabad</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-c">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-q">I've watched Chef Aryan for 2 years. When his biryani hit the table I literally couldn't speak. Not because of the food. Because it was real.</div>
+        <div class="testi-au"><div class="testi-aui" style="background:#6366F1">A</div><div><div class="testi-aun">Ananya K.</div><div class="testi-aus">Private dinner · Banjara Hills</div></div></div>
+      </div>
+      <div class="testi-c">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-q">Booked for my team of 8. First time in 3 years of working together that we actually talked — really talked. Chef knew everyone's name by dessert.</div>
+        <div class="testi-au"><div class="testi-aui" style="background:#D85A30">V</div><div><div class="testi-aun">Vikram M.</div><div class="testi-aus">Corporate dinner · Jubilee Hills</div></div></div>
+      </div>
+      <div class="testi-c">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-q">I learned more in one hour than in 100 videos. She showed me things the camera never captures. The real technique, in person.</div>
+        <div class="testi-au"><div class="testi-aui" style="background:#059669">S</div><div><div class="testi-aun">Sneha R.</div><div class="testi-aus">Art workshop · Gachibowli</div></div></div>
+      </div>
+      <div class="testi-c">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-q">My daughter's birthday. Chef walked in and she burst into tears. She'd watched his channel every single day for 2 years. I'll never forget her face.</div>
+        <div class="testi-au"><div class="testi-aui" style="background:#7C3AED">M</div><div><div class="testi-aun">Meghana R.</div><div class="testi-aus">Birthday experience · Hyderabad</div></div></div>
+      </div>
+      <div class="testi-c">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-q">4 years cooking on camera. I'd never seen someone's face change when they tasted my food. ScriBuz gave me that moment. It's why I started cooking.</div>
+        <div class="testi-au"><div class="testi-aui" style="background:#D85A30">K</div><div><div class="testi-aun">Kabir (Creator)</div><div class="testi-aus">160K subscribers · ScriBuz host</div></div></div>
+      </div>
+      <div class="testi-c">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-q">The booking was seamless, the creator was incredible, and ScriBuz support was on WhatsApp the whole time. Already booked my second experience.</div>
+        <div class="testi-au"><div class="testi-aui" style="background:#0891B2">R</div><div><div class="testi-aun">Rohan T.</div><div class="testi-aus">Gaming session · Madhapur</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ DUAL VALUE ═══════════ -->
+<section class="dual">
+  <div style="max-width:1100px;margin:0 auto;text-align:center;margin-bottom:48px;padding:0 2rem">
+    <div class="hiw-label">Join ScriBuz</div>
+    <h2 style="font-size:clamp(1.8rem,4vw,3rem);font-weight:800;letter-spacing:-1.5px;color:#fff;margin-bottom:12px;line-height:1.1">Which side of the table are you on?</h2>
+  </div>
+  <div class="dual-inner" style="padding:0 2rem">
+    <div class="dual-card dual-card-fan">
+      <div class="dual-glow-fan"></div>
+      <span class="dual-tag dual-tag-fan">For Fans</span>
+      <div class="dual-title">Ready to meet<br>your favourite creator?</div>
+      <div class="dual-desc">You've subscribed. You've watched every video. Now book a seat at their actual table. Private, personal, unforgettable.</div>
+      <div class="dual-perks">
+        <div class="dual-perk"><div class="dual-perk-dot dual-perk-dot-fan"></div>Browse 30+ verified creators</div>
+        <div class="dual-perk"><div class="dual-perk-dot dual-perk-dot-fan"></div>Book from ₹8,000 per experience</div>
+        <div class="dual-perk"><div class="dual-perk-dot dual-perk-dot-fan"></div>100% escrow payment protection</div>
+        <div class="dual-perk"><div class="dual-perk-dot dual-perk-dot-fan"></div>Full refund if creator cancels</div>
+      </div>
+      <a href="/fan/signup.html" class="dual-btn-fan">Create fan account →</a>
+    </div>
+    <div class="dual-card dual-card-creator">
+      <div class="dual-glow-creator"></div>
+      <span class="dual-tag dual-tag-creator">For Creators</span>
+      <div class="dual-title">Turn subscribers<br>into real income</div>
+      <div class="dual-desc">Your audience is your biggest asset. ScriBuz lets you monetise it with premium in-person experiences — on your terms.</div>
+      <div class="dual-perks">
+        <div class="dual-perk"><div class="dual-perk-dot"></div>Keep 95% of every booking</div>
+        <div class="dual-perk"><div class="dual-perk-dot"></div>Accept or reject every request</div>
+        <div class="dual-perk"><div class="dual-perk-dot"></div>UPI payouts within 2 business days</div>
+        <div class="dual-perk"><div class="dual-perk-dot"></div>Full dashboard with analytics</div>
+      </div>
+      <a href="/creator/auth.html" class="dual-btn-creator">Apply as a creator →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SAFETY ═══════════ -->
+<section class="safety">
+  <div style="max-width:1000px;margin:0 auto 48px;text-align:center;padding:0 2rem">
+    <div class="feat-eyebrow" style="text-align:center">Safety first</div>
+    <h2 class="feat-title" style="text-align:center">Built so both sides feel completely safe</h2>
+  </div>
+  <div class="safety-inner" style="padding:0 2rem">
+    <div class="saf-item"><div class="saf-icon">🪪</div><div><div class="saf-title">Identity verified</div><div class="saf-desc">Every fan and creator verified with government ID before any booking confirms.</div></div></div>
+    <div class="saf-item"><div class="saf-icon">🔒</div><div><div class="saf-title">Escrow payments</div><div class="saf-desc">Money held securely via Razorpay. Released only 24 hours after the experience completes.</div></div></div>
+    <div class="saf-item"><div class="saf-icon">🛡️</div><div><div class="saf-title">Creator control</div><div class="saf-desc">Creators accept or reject every request. No unwanted bookings. No pressure. Ever.</div></div></div>
+    <div class="saf-item"><div class="saf-icon">💬</div><div><div class="saf-title">In-app chat</div><div class="saf-desc">Fan and creator coordinate every detail securely before the experience happens.</div></div></div>
+    <div class="saf-item"><div class="saf-icon">📞</div><div><div class="saf-title">Live support</div><div class="saf-desc">ScriBuz team reachable on WhatsApp throughout every booking and event.</div></div></div>
+    <div class="saf-item"><div class="saf-icon">⭐</div><div><div class="saf-title">Two-way reviews</div><div class="saf-desc">Fans review creators. Creators review fans. Full accountability on both sides.</div></div></div>
+  </div>
+</section>
+
+<!-- ═══════════ WAITLIST ═══════════ -->
+<section class="wl">
+  <div class="wl-inner">
+    <div class="wl-eyebrow">Early access · Hyderabad</div>
+    <h2 class="wl-title">Be first when your<br>favourite joins ScriBuz</h2>
+    <p class="wl-sub">Join the waitlist. Get notified the moment a creator you love becomes bookable. No spam, ever.</p>
+    <form id="waitlist-form">
+      <div class="wl-form">
+        <input id="wl-email" class="wl-inp" type="email" placeholder="your@email.com" required>
+        <button type="submit" class="wl-btn">Join waitlist</button>
+      </div>
+    </form>
+    <div id="wl-success" class="wl-success">🎉 You're on the list! We'll notify you first.</div>
+    <p class="wl-note">2,400+ fans on the waitlist · Hyderabad · More cities coming soon</p>
+  </div>
+</section>
+
+<footer id="footer"></footer>
+<div id="toast" class="toast"></div>
+<script src="/fan/script.js"></script>
+<script>
+  function doHeroSearch() {
+    const q = document.getElementById('hero-search').value.trim();
+    if (q) window.location.href = '/fan/browse.html?search=' + encodeURIComponent(q);
+    else   window.location.href = '/fan/browse.html';
+  }
+</script>
+</body>
+</html>

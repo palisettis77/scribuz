@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Event Sprint Board — ScriBuz</title>
+  <link rel="stylesheet" href="/creator/style.css">
+  <style>
+    .kb-wrap{max-width:1300px;margin:0 auto;padding:24px 2rem 60px}
+    .kb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+    .kb-header h1{font-size:1.4rem;font-weight:700;letter-spacing:-.5px}
+    .kb-board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start}
+    .kb-col{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;min-height:500px}
+    .kb-col-head{padding:13px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+    .kb-col-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+    .kb-count{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+    .col-pending .kb-col-head{border-top:3px solid var(--yw3)}
+    .col-prep    .kb-col-head{border-top:3px solid var(--bl3)}
+    .col-ready   .kb-col-head{border-top:3px solid var(--or)}
+    .col-done    .kb-col-head{border-top:3px solid var(--gn3)}
+    .col-pending .kb-count{background:var(--yw2);color:var(--yw)}
+    .col-prep    .kb-count{background:var(--bl2);color:var(--bl)}
+    .col-ready   .kb-count{background:#FAECE7;color:var(--or)}
+    .col-done    .kb-count{background:var(--gn2);color:var(--gn)}
+    .kb-cards{padding:10px;display:flex;flex-direction:column;gap:8px;min-height:400px}
+    .kb-card{background:var(--bg3);border:1.5px solid var(--bd);border-radius:var(--r);padding:13px;cursor:grab;transition:.2s;position:relative;animation:fadeUp .3s ease}
+    .kb-card:hover{border-color:var(--or);box-shadow:0 4px 16px rgba(216,90,48,.1);transform:translateY(-1px)}
+    .kb-card.dragging{opacity:.4;cursor:grabbing}
+    .kc-fan{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:5px}
+    .kc-type{font-size:11px;color:var(--tx2);margin-bottom:7px}
+    .kc-date{font-size:11px;font-weight:600;color:var(--or);margin-bottom:8px}
+    .kc-amount{font-size:12px;font-weight:700;color:var(--gn)}
+    .kc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+    .kc-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;background:var(--bg);border:1px solid var(--bd);color:var(--tx2)}
+    .kc-tag.superfan{background:var(--yw2);border-color:var(--yw3);color:var(--yw)}
+    .kc-actions{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap}
+    .kc-btn{font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;cursor:pointer;border:1px solid var(--bd);background:#fff;color:var(--tx2);transition:.15s;font-family:inherit}
+    .kc-btn:hover{background:var(--or);border-color:var(--or);color:#fff}
+    .kb-drop-zone{border:2px dashed var(--bd);border-radius:var(--r);padding:20px;text-align:center;font-size:12px;color:var(--tx3);margin:0 10px 10px;display:none}
+    .kb-col.drag-over .kb-drop-zone{display:block;border-color:var(--or);color:var(--or);background:#FAECE7}
+    .notes-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:999;padding:16px}
+    .notes-modal.open{display:flex}
+    .notes-box{background:#fff;border-radius:var(--rl);width:100%;max-width:460px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+    .notes-box h4{font-size:1rem;font-weight:700;margin-bottom:14px}
+    .notes-box textarea{width:100%;min-height:120px;padding:10px 13px;border-radius:var(--r);border:1.5px solid var(--bd);font-size:13px;font-family:inherit;resize:vertical;outline:none}
+    .notes-box textarea:focus{border-color:var(--or)}
+    .notes-actions{display:flex;gap:8px;margin-top:12px}
+    .empty-col{text-align:center;padding:32px 16px;font-size:12px;color:var(--tx3)}
+    @media(max-width:960px){.kb-board{grid-template-columns:1fr 1fr}}
+    @media(max-width:560px){.kb-board{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav class="cnav">
+  <div class="cnav-inner">
+    <div style="display:flex;align-items:center">
+      <a href="/creator/dashboard.html" class="cnav-logo">Scri<span>Buz</span></a>
+      <span class="cnav-badge">Event Sprint</span>
+    </div>
+    <div class="cnav-right">
+      <a href="/creator/dashboard.html" style="font-size:13px;color:rgba(255,255,255,.5);font-weight:500">← Dashboard</a>
+      <button class="btn-logout" onclick="doLogout()">Log out →</button>
+    </div>
+  </div>
+</nav>
+
+<div class="kb-wrap">
+  <div class="kb-header">
+    <div>
+      <h1>📋 Event Sprint Board</h1>
+      <p style="font-size:13px;color:var(--tx2);margin-top:4px">Drag bookings across columns to track your event pipeline</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="refresh-btn" onclick="loadBoard()">↻ Refresh</button>
+      <a href="/creator/dashboard.html" class="btn btn-ghost" style="font-size:13px;padding:7px 14px">← Back to dashboard</a>
+    </div>
+  </div>
+
+  <div class="kb-board">
+    <div class="kb-col col-pending" id="col-pending" ondragover="onDragOver(event,this)" ondrop="onDrop(event,'pending')" ondragleave="onDragLeave(this)">
+      <div class="kb-col-head">
+        <div class="kb-col-title">⏳ Pending <span class="kb-count" id="cnt-pending">0</span></div>
+      </div>
+      <div class="kb-cards" id="cards-pending"></div>
+      <div class="kb-drop-zone">Drop here</div>
+    </div>
+    <div class="kb-col col-prep" id="col-prep" ondragover="onDragOver(event,this)" ondrop="onDrop(event,'prep')" ondragleave="onDragLeave(this)">
+      <div class="kb-col-head">
+        <div class="kb-col-title">🔧 Prep Needed <span class="kb-count" id="cnt-prep">0</span></div>
+      </div>
+      <div class="kb-cards" id="cards-prep"></div>
+      <div class="kb-drop-zone">Drop here</div>
+    </div>
+    <div class="kb-col col-ready" id="col-ready" ondragover="onDragOver(event,this)" ondrop="onDrop(event,'ready')" ondragleave="onDragLeave(this)">
+      <div class="kb-col-head">
+        <div class="kb-col-title">🚀 Ready <span class="kb-count" id="cnt-ready">0</span></div>
+      </div>
+      <div class="kb-cards" id="cards-ready"></div>
+      <div class="kb-drop-zone">Drop here</div>
+    </div>
+    <div class="kb-col col-done" id="col-done" ondragover="onDragOver(event,this)" ondrop="onDrop(event,'done')" ondragleave="onDragLeave(this)">
+      <div class="kb-col-head">
+        <div class="kb-col-title">✅ Completed <span class="kb-count" id="cnt-done">0</span></div>
+      </div>
+      <div class="kb-cards" id="cards-done"></div>
+      <div class="kb-drop-zone">Drop here</div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTES MODAL -->
+<div class="notes-modal" id="notes-modal">
+  <div class="notes-box">
+    <h4>📝 Booking notes</h4>
+    <div id="notes-booking-info" style="font-size:12px;color:var(--tx2);margin-bottom:10px"></div>
+    <textarea id="notes-text" placeholder="Add prep notes, special requirements, items to bring…"></textarea>
+    <div class="notes-actions">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeNotes()">Cancel</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveNotes()">Save notes →</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script>
+const API = 'http://127.0.0.1:5000';
+const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
+
+function getSession() {
+  const token = localStorage.getItem('sc_token');
+  const creator = localStorage.getItem('sc_creator');
+  if (!token || !creator) return null;
+  try { return { token, creator: JSON.parse(creator) }; } catch { return null; }
+}
+function doLogout() {
+  localStorage.removeItem('sc_token'); localStorage.removeItem('sc_creator');
+  window.location.href = '/creator/auth.html';
+}
+function showToast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast' + (err?' err':''); t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3500);
+}
+
+// Local kanban state — stored in localStorage per creator
+let kanbanState = {};
+let allBookings = [];
+let dragId = null, notesId = null;
+
+function loadKanban() {
+  const s = getSession();
+  if (!s) return;
+  const key = 'kb_' + s.creator.id;
+  try { kanbanState = JSON.parse(localStorage.getItem(key) || '{}'); } catch { kanbanState = {}; }
+}
+function saveKanban() {
+  const s = getSession();
+  if (!s) return;
+  localStorage.setItem('kb_' + s.creator.id, JSON.stringify(kanbanState));
+}
+
+function getColForBooking(b) {
+  if (kanbanState[b.id]) return kanbanState[b.id].col;
+  if (b.status === 'completed') return 'done';
+  if (b.status === 'confirmed') return 'pending';
+  if (b.status === 'pending')   return 'pending';
+  return 'pending';
+}
+
+function getNotes(id) {
+  return kanbanState[id]?.notes || '';
+}
+
+async function loadBoard() {
+  const s = getSession();
+  if (!s) { window.location.href = '/creator/auth.html'; return; }
+  loadKanban();
+
+  const res = await fetch(`${API}/api/creator/bookings`, {
+    headers: { 'Authorization': `Bearer ${s.token}` }
+  }).then(r => r.json()).catch(() => ({ bookings: [] }));
+
+  allBookings = (res.bookings || []).filter(b => ['pending','confirmed','completed'].includes(b.status));
+  renderBoard();
+}
+
+function renderBoard() {
+  const cols = { pending: [], prep: [], ready: [], done: [] };
+  allBookings.forEach(b => {
+    const col = getColForBooking(b);
+    cols[col] = cols[col] || [];
+    cols[col].push(b);
+  });
+
+  ['pending','prep','ready','done'].forEach(col => {
+    const el = document.getElementById('cards-' + col);
+    const bks = cols[col] || [];
+    document.getElementById('cnt-' + col).textContent = bks.length;
+    el.innerHTML = bks.length
+      ? bks.map(b => cardHTML(b, col)).join('')
+      : `<div class="empty-col">No bookings here yet.<br>Drag cards in to get started.</div>`;
+  });
+  addDragListeners();
+}
+
+function cardHTML(b, col) {
+  const dt = b.event_date
+    ? new Date(b.event_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+    : 'Date TBD';
+  const notes = getNotes(b.id);
+  const sfTag = b.is_superfan ? '<span class="kc-tag superfan">⭐ Super Fan</span>' : '';
+  return `<div class="kb-card" draggable="true" data-id="${b.id}" id="kc-${b.id}">
+    <div class="kc-fan">${b.fan_name || 'Fan #' + b.fan_id}</div>
+    <div class="kc-type">🎉 ${b.event_type || 'Experience'} · 👥 ${b.guests || 1} guests</div>
+    <div class="kc-date">📅 ${dt}</div>
+    <div class="kc-amount">${fmt(b.amount)}</div>
+    ${notes ? `<div style="font-size:11px;color:var(--tx2);margin-top:6px;font-style:italic;background:var(--bg);border-radius:6px;padding:5px 8px">📝 ${notes.substring(0,60)}${notes.length>60?'…':''}</div>` : ''}
+    <div class="kc-tags">${sfTag}<span class="kc-tag">${b.status}</span></div>
+    <div class="kc-actions">
+      <button class="kc-btn" onclick="openNotes(${b.id},'${(b.fan_name||'Fan').replace(/'/g,"\\'")}')">📝 Notes</button>
+      <button class="kc-btn" onclick="window.location='/creator/dashboard.html'">📋 View</button>
+    </div>
+  </div>`;
+}
+
+function addDragListeners() {
+  document.querySelectorAll('.kb-card').forEach(card => {
+    card.addEventListener('dragstart', e => {
+      dragId = card.dataset.id;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+  });
+}
+
+function onDragOver(e, col) {
+  e.preventDefault();
+  col.classList.add('drag-over');
+}
+function onDragLeave(col) { col.classList.remove('drag-over'); }
+function onDrop(e, colName) {
+  e.preventDefault();
+  document.querySelectorAll('.kb-col').forEach(c => c.classList.remove('drag-over'));
+  if (!dragId) return;
+  kanbanState[dragId] = kanbanState[dragId] || {};
+  kanbanState[dragId].col = colName;
+  saveKanban();
+  renderBoard();
+  showToast('Moved to ' + colName.charAt(0).toUpperCase() + colName.slice(1));
+  dragId = null;
+}
+
+// Notes
+function openNotes(id, name) {
+  notesId = id;
+  document.getElementById('notes-booking-info').textContent = 'Booking with ' + name;
+  document.getElementById('notes-text').value = getNotes(id);
+  document.getElementById('notes-modal').classList.add('open');
+}
+function closeNotes() { document.getElementById('notes-modal').classList.remove('open'); notesId = null; }
+function saveNotes() {
+  if (!notesId) return;
+  kanbanState[notesId] = kanbanState[notesId] || {};
+  kanbanState[notesId].notes = document.getElementById('notes-text').value;
+  saveKanban(); closeNotes(); renderBoard();
+  showToast('Notes saved!');
+}
+
+loadBoard();
+</script>
+</body>
+</html>

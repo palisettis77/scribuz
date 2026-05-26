@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ScriBuz Admin — Dashboard</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg2);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* ── ADMIN NAV ── */
+    .admin-nav {
+      background: var(--text);
+      padding: 0.9rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .admin-nav-logo {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    .admin-nav-logo span {
+      background: linear-gradient(135deg, var(--orange), var(--orange2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .admin-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(216,90,48,0.2);
+      color: var(--orange2);
+      border: 1px solid rgba(216,90,48,0.3);
+      margin-left: 10px;
+    }
+    .admin-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .admin-nav-right a {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      font-weight: 500;
+      transition: 0.15s;
+    }
+    .admin-nav-right a:hover { color: #fff; }
+    .live-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #97C459;
+    }
+    .live-dot::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #97C459;
+      animation: pulse 1.5s ease infinite;
+    }
+
+    /* ── LAYOUT ── */
+    .admin-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .admin-header {
+      margin-bottom: 1.5rem;
+    }
+    .admin-header h1 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.75px;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+    .admin-header p {
+      font-size: 14px;
+      color: var(--text2);
+    }
+
+    /* ── STAT CARDS ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .stat-card-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text3);
+      margin-bottom: 0.5rem;
+    }
+    .stat-card-value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .stat-card-value.green { color: #3B6D11; }
+    .stat-card-value.orange { color: var(--orange); }
+    .stat-card-sub {
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    /* ── MAIN GRID ── */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1.25rem;
+    }
+
+    /* ── BOOKINGS TABLE ── */
+    .admin-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .admin-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .admin-card-header h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .refresh-btn {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--orange);
+      background: #FAECE7;
+      border: 1px solid #F0997B;
+      padding: 5px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .refresh-btn:hover { background: var(--orange); color: #fff; }
+
+    .bookings-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .bookings-table th {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text3);
+      padding: 0.75rem 1.5rem;
+      text-align: left;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+    }
+    .bookings-table td {
+      padding: 1rem 1.5rem;
+      font-size: 13px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .bookings-table tr:last-child td { border-bottom: none; }
+    .bookings-table tr:hover td { background: var(--bg2); }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .status-pending  { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+    .status-paid     { background: #EAF3DE; color: #27500A; border: 1px solid #97C459; }
+    .status-confirmed{ background: #EEF2FF; color: #3730A3; border: 1px solid #A5B4FC; }
+    .status-cancelled{ background: #FCEBEB; color: #A32D2D; border: 1px solid #F87171; }
+
+    .amount-cell {
+      font-weight: 700;
+      color: #27500A;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--text3);
+      font-size: 14px;
+    }
+    .empty-state .empty-icon { font-size: 32px; margin-bottom: 0.75rem; }
+
+    /* ── LOADING SPINNER ── */
+    .table-loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text3);
+      font-size: 14px;
+    }
+    .spinner {
+      width: 24px; height: 24px;
+      border: 2px solid var(--border);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 0.75rem;
+    }
+
+    /* ── RIGHT PANEL ── */
+    .right-panel { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    /* ── MONEY CARD ── */
+    .money-card {
+      background: var(--text);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+    .money-card::before {
+      content: '';
+      position: absolute;
+      bottom: -30px; right: -30px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: rgba(216,90,48,0.12);
+    }
+    .money-card-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 0.5rem;
+    }
+    .money-card-amount {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -2px;
+      color: #fff;
+      margin-bottom: 0.25rem;
+    }
+    .money-card-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 1.25rem;
+    }
+    .money-breakdown {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .money-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .money-row-label { color: rgba(255,255,255,0.5); }
+    .money-row-value { color: #fff; font-weight: 600; }
+    .money-row-value.highlight { color: var(--orange2); }
+
+    /* ── RECENT EMAILS ── */
+    .email-list { padding: 0; }
+    .email-item {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .email-item:last-child { border-bottom: none; }
+    .email-item:hover { background: var(--bg2); }
+    .email-item-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+    .email-item-to { font-size: 13px; font-weight: 700; color: var(--text); }
+    .email-item-time { font-size: 11px; color: var(--text3); }
+    .email-item-subject { font-size: 12px; color: var(--text2); }
+    .email-item-preview { font-size: 12px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .email-unread .email-item-to { color: var(--orange); }
+
+    /* ── EMAIL MODAL ── */
+    .email-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .email-modal-overlay.open { display: flex; }
+    .email-modal {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 560px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      animation: fadeUp 0.2s ease;
+    }
+    .email-modal-header {
+      background: var(--bg2);
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .email-modal-header h3 { font-size: 15px; font-weight: 700; }
+    .email-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text2);
+      line-height: 1;
+    }
+    .email-modal-meta {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text2);
+    }
+    .email-modal-meta div { margin-bottom: 3px; }
+    .email-modal-meta strong { color: var(--text); }
+    .email-modal-body {
+      padding: 1.5rem;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .email-content-box {
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-top: 0.5rem;
+    }
+    .email-content-box .ec-logo {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .email-content-box .ec-logo span {
+      background: linear-gradient(135deg, var(--orange), var(--orange2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .ec-greeting { font-size: 16px; font-weight: 700; margin-bottom: 0.5rem; }
+    .ec-body { font-size: 13px; color: var(--text2); line-height: 1.75; margin-bottom: 1rem; }
+    .ec-details {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .ec-detail-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .ec-detail-row:last-child { border-bottom: none; }
+    .ec-detail-label { color: var(--text2); }
+    .ec-detail-value { font-weight: 600; color: var(--text); }
+    .ec-footer { font-size: 11px; color: var(--text3); margin-top: 0.75rem; }
+
+    @media (max-width: 900px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .admin-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .admin-page { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ADMIN NAV -->
+<nav class="admin-nav">
+  <div style="display:flex;align-items:center;gap:0.5rem;">
+    <span class="admin-nav-logo">Scri<span>Buz</span></span>
+    <span class="admin-badge">Admin</span>
+  </div>
+  <div class="admin-nav-right">
+    <span class="live-dot">Live</span>
+    <a href="browse.html" target="_blank">View site →</a>
+    <a href="index.html">Home</a>
+  </div>
+</nav>
+
+<div class="admin-page">
+
+  <!-- HEADER -->
+  <div class="admin-header">
+    <h1>Dashboard</h1>
+    <p id="lastUpdated">Loading data...</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-card-label">Total Bookings</div>
+      <div class="stat-card-value orange" id="statTotal">—</div>
+      <div class="stat-card-sub">All time</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Pending</div>
+      <div class="stat-card-value" id="statPending" style="color:#92400E;">—</div>
+      <div class="stat-card-sub">Awaiting response</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Revenue (Gross)</div>
+      <div class="stat-card-value green" id="statRevenue">—</div>
+      <div class="stat-card-sub">Total booking value</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">ScriBuz Cut (5%)</div>
+      <div class="stat-card-value orange" id="statCut">—</div>
+      <div class="stat-card-sub">Your earnings</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="admin-grid">
+
+    <!-- BOOKINGS TABLE -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3>📋 All Bookings</h3>
+        <button class="refresh-btn" onclick="loadDashboard()">↻ Refresh</button>
+      </div>
+      <div id="bookingsTableWrap">
+        <div class="table-loading">
+          <div class="spinner"></div>
+          Loading bookings...
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+      <!-- MONEY CARD -->
+      <div class="money-card">
+        <div class="money-card-label">💰 Money Received</div>
+        <div class="money-card-amount" id="moneyTotal">₹0</div>
+        <div class="money-card-sub">Total collected via dummy Razorpay</div>
+        <div class="money-breakdown">
+          <div class="money-row">
+            <span class="money-row-label">Gross bookings</span>
+            <span class="money-row-value" id="moneyGross">₹0</span>
+          </div>
+          <div class="money-row">
+            <span class="money-row-label">Creator payouts</span>
+            <span class="money-row-value" id="moneyCreators">₹0</span>
+          </div>
+          <div class="money-row">
+            <span class="money-row-label">Your cut (5%)</span>
+            <span class="money-row-value highlight" id="moneyCut">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMAIL CONFIRMATIONS -->
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3>📧 Email Confirmations</h3>
+          <span style="font-size:12px;color:var(--text3);">Dummy</span>
+        </div>
+        <div class="email-list" id="emailList">
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            No emails sent yet
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL PREVIEW MODAL -->
+<div class="email-modal-overlay" id="emailModal">
+  <div class="email-modal">
+    <div class="email-modal-header">
+      <h3>📧 Email Preview</h3>
+      <button class="email-close" onclick="closeEmailModal()">×</button>
+    </div>
+    <div class="email-modal-meta" id="emailMeta"></div>
+    <div class="email-modal-body" id="emailBody"></div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://127.0.0.1:5000';
+  const ADMIN_SECRET = 'scribuz_admin_2026'; // must match app.py ADMIN_SECRET
+
+  async function loadDashboard() {
+    document.getElementById('lastUpdated').textContent = `Last updated: ${new Date().toLocaleTimeString('en-IN')}`;
+
+    try {
+      const res = await fetch(`${API}/api/admin/dashboard?secret=${ADMIN_SECRET}`);
+      const data = await res.json();
+
+      if (!data.success) {
+        document.getElementById('lastUpdated').textContent = `Error: ${data.message}`;
+        return;
+      }
+
+      // Update stat cards from real data
+      const s = data.stats;
+      document.getElementById('statTotal').textContent   = s.total_bookings;
+      document.getElementById('statPending').textContent = s.pending_bookings;
+      document.getElementById('statRevenue').textContent = `₹${Number(s.revenue.fan_total).toLocaleString('en-IN')}`;
+      document.getElementById('statCut').textContent     = `₹${Number(s.revenue.scribuz_cut).toLocaleString('en-IN')}`;
+
+      document.getElementById('moneyTotal').textContent   = `₹${Number(s.revenue.fan_total).toLocaleString('en-IN')}`;
+      document.getElementById('moneyGross').textContent   = `₹${Number(s.revenue.fan_total).toLocaleString('en-IN')}`;
+      document.getElementById('moneyCreators').textContent= `₹${Number(s.revenue.creator_due).toLocaleString('en-IN')}`;
+      document.getElementById('moneyCut').textContent     = `₹${Number(s.revenue.scribuz_cut).toLocaleString('en-IN')}`;
+
+      renderTable(data.bookings || []);
+      renderEmails(data.bookings || []);
+
+    } catch (err) {
+      document.getElementById('lastUpdated').textContent = 'Could not connect to server. Is Flask running?';
+    }
+  }
+
+  function renderStats(bookings) {
+    const total = bookings.length;
+    const pending = bookings.filter(b => b.status === 'pending').length;
+    const gross = bookings.reduce((sum, b) => sum + (b.amount || 0), 0);
+    const cut = Math.round(gross * 0.05);
+    const creatorPayout = gross - cut;
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statPending').textContent = pending;
+    document.getElementById('statRevenue').textContent = `₹${gross.toLocaleString('en-IN')}`;
+    document.getElementById('statCut').textContent = `₹${cut.toLocaleString('en-IN')}`;
+
+    document.getElementById('moneyTotal').textContent = `₹${gross.toLocaleString('en-IN')}`;
+    document.getElementById('moneyGross').textContent = `₹${gross.toLocaleString('en-IN')}`;
+    document.getElementById('moneyCreators').textContent = `₹${creatorPayout.toLocaleString('en-IN')}`;
+    document.getElementById('moneyCut').textContent = `₹${cut.toLocaleString('en-IN')}`;
+  }
+
+  function renderTable(bookings) {
+    const wrap = document.getElementById('bookingsTableWrap');
+
+    if (!bookings.length) {
+      wrap.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div>No bookings yet</div>`;
+      return;
+    }
+
+    wrap.innerHTML = `
+      <table class="bookings-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Fan</th>
+            <th>Creator</th>
+            <th>Event</th>
+            <th>Date</th>
+            <th>Creator gets</th>
+            <th>Fan paid</th>
+            <th>Our cut</th>
+            <th>Status</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${bookings.map(b => {
+            const creatorGets = b.amount || 0;
+            const fanPaid     = b.fan_total || Math.round(creatorGets * 1.05);
+            const ourCut      = b.service_fee || (fanPaid - creatorGets);
+            return `
+            <tr>
+              <td style="color:var(--text3);font-size:12px;">#${b.id}</td>
+              <td>
+                <div style="font-weight:600;">${b.fan_name || 'Fan #'+b.fan_id}</div>
+                <div style="font-size:11px;color:var(--text3);">${b.fan_email || ''}</div>
+              </td>
+              <td style="font-weight:600;">${b.creator_name || 'Creator #'+b.creator_id}</td>
+              <td>${b.event_type || '—'}</td>
+              <td style="font-size:12px;">${b.event_date ? new Date(b.event_date).toLocaleDateString('en-IN') : '—'}</td>
+              <td style="font-weight:700;color:#27500A;">₹${Number(creatorGets).toLocaleString('en-IN')}</td>
+              <td style="font-weight:700;color:var(--text);">₹${Number(fanPaid).toLocaleString('en-IN')}</td>
+              <td style="font-weight:700;color:var(--orange);">₹${Number(ourCut).toLocaleString('en-IN')}</td>
+              <td><span class="status-badge status-${b.status}">${b.status}</span></td>
+              <td style="font-size:11px;color:var(--text3);">${timeAgo(b.created_at)}</td>
+            </tr>
+          `}).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function renderEmails(bookings) {
+    const list = document.getElementById('emailList');
+
+    if (!bookings.length) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div>No emails sent yet</div>`;
+      return;
+    }
+
+    list.innerHTML = bookings.map((b, i) => `
+      <div class="email-item ${i === 0 ? 'email-unread' : ''}" onclick="openEmail(${i})">
+        <div class="email-item-top">
+          <span class="email-item-to">${b.fan_email || b.fan_name || 'Fan'}</span>
+          <span class="email-item-time">${timeAgo(b.created_at)}</span>
+        </div>
+        <div class="email-item-subject">Booking Confirmed — ${b.creator_name || 'Creator'}</div>
+        <div class="email-item-preview">Your booking for ${b.event_type || 'event'} has been received...</div>
+      </div>
+    `).join('');
+
+    // Store for modal
+    window._emailBookings = bookings;
+  }
+
+  function openEmail(index) {
+    const b = window._emailBookings[index];
+    const service = Math.round((b.amount || 0) * 0.05);
+    const total = (b.amount || 0) + service;
+
+    document.getElementById('emailMeta').innerHTML = `
+      <div><strong>To:</strong> ${b.fan_email || b.fan_name || 'Fan'}</div>
+      <div><strong>From:</strong> hello@scribuz.in</div>
+      <div><strong>Subject:</strong> 🎉 Booking Request Received — ${b.creator_name || 'Creator'}</div>
+      <div><strong>Sent:</strong> ${new Date(b.created_at).toLocaleString('en-IN')}</div>
+    `;
+
+    document.getElementById('emailBody').innerHTML = `
+      <div class="email-content-box">
+        <div class="ec-logo">Scri<span>Buz</span></div>
+        <div class="ec-greeting">Hey ${b.fan_name || 'there'}! 👋</div>
+        <div class="ec-body">
+          Your booking request has been sent to <strong>${b.creator_name || 'the creator'}</strong>. They will review and respond within <strong>24 hours</strong>. You'll get another email once they confirm.
+        </div>
+        <div class="ec-details">
+          <div class="ec-detail-row">
+            <span class="ec-detail-label">Creator</span>
+            <span class="ec-detail-value">${b.creator_name || '—'}</span>
+          </div>
+          <div class="ec-detail-row">
+            <span class="ec-detail-label">Event type</span>
+            <span class="ec-detail-value">${b.event_type || '—'}</span>
+          </div>
+          <div class="ec-detail-row">
+            <span class="ec-detail-label">Event date</span>
+            <span class="ec-detail-value">${b.event_date ? new Date(b.event_date).toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'}) : '—'}</span>
+          </div>
+          <div class="ec-detail-row">
+            <span class="ec-detail-label">Guests</span>
+            <span class="ec-detail-value">${b.guests || '—'}</span>
+          </div>
+          <div class="ec-detail-row">
+            <span class="ec-detail-label">Base price</span>
+            <span class="ec-detail-value">₹${Number(b.amount || 0).toLocaleString('en-IN')}</span>
+          </div>
+          <div class="ec-detail-row">
+            <span class="ec-detail-label">Service fee (5%)</span>
+            <span class="ec-detail-value">₹${service.toLocaleString('en-IN')}</span>
+          </div>
+          <div class="ec-detail-row">
+            <span class="ec-detail-label">Total paid</span>
+            <span class="ec-detail-value" style="color:var(--orange);">₹${total.toLocaleString('en-IN')}</span>
+          </div>
+        </div>
+        <div class="ec-body">
+          Questions? Reply to this email or WhatsApp us at <strong>+91 99999 99999</strong>.
+        </div>
+        <div class="ec-footer">© 2025 ScriBuz · Hyderabad · hello@scribuz.in · Unsubscribe</div>
+      </div>
+    `;
+
+    document.getElementById('emailModal').classList.add('open');
+  }
+
+  function closeEmailModal() {
+    document.getElementById('emailModal').classList.remove('open');
+  }
+
+  document.getElementById('emailModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEmailModal();
+  });
+
+  // ── TIME AGO ──
+  function timeAgo(dateStr) {
+    if (!dateStr) return '—';
+    const diff = (Date.now() - new Date(dateStr)) / 1000;
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+    return `${Math.floor(diff/86400)}d ago`;
+  }
+
+  // ── AUTO REFRESH every 30s ──
+  loadDashboard();
+  setInterval(loadDashboard, 30000);
+</script>
+</body>
+</html>

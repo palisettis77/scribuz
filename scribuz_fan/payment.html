@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pay Securely — ScriBuz</title>
+  <link rel="stylesheet" href="/fan/style.css">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body{background:#F0EFE9;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px 60px}
+    .pay-wrap{width:100%;max-width:480px}
+    .pay-card{background:#fff;border:1.5px solid #E5E4E0;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.08)}
+    .pay-header{background:linear-gradient(135deg,#1A1A18,#2a2a26);padding:24px 28px;color:#fff;position:relative;overflow:hidden}
+    .ph-glow{position:absolute;top:-30px;right:-30px;width:150px;height:150px;background:radial-gradient(circle,rgba(216,90,48,.3),transparent 70%)}
+    .ph-logo{font-size:16px;font-weight:700;margin-bottom:16px;position:relative}
+    .ph-logo span{background:linear-gradient(135deg,#D85A30,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .ph-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:6px;position:relative}
+    .ph-amount{font-size:2.8rem;font-weight:700;letter-spacing:-2px;color:#fff;position:relative}
+    .ph-amount span{font-size:1.4rem;font-weight:400;color:rgba(255,255,255,.5);margin-right:4px}
+    .ph-creator{font-size:13px;color:rgba(255,255,255,.5);margin-top:6px;position:relative}
+    .pay-body{padding:24px 28px}
+    .pay-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #E5E4E0;font-size:13px}
+    .pay-row:last-child{border-bottom:none}
+    .pay-label{color:#5C5B57}
+    .pay-val{font-weight:600;color:#1A1A18}
+    .pay-val.green{color:#27500A}
+    .pay-val.orange{color:#D85A30}
+    .pay-val.muted{color:#9C9B96;font-weight:400}
+    .divider{height:1px;background:#E5E4E0;margin:16px 0}
+    .pay-btn{width:100%;padding:15px;background:#D85A30;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:.18s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px}
+    .pay-btn:hover{background:#993C1D;transform:translateY(-1px)}
+    .pay-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    .secure-badges{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:14px;font-size:11px;color:#9C9B96}
+    .secure-badge{display:flex;align-items:center;gap:4px}
+    .success-state{text-align:center;padding:32px 20px}
+    .success-icon{font-size:4rem;margin-bottom:16px}
+    .success-state h2{font-size:1.3rem;font-weight:700;color:#27500A;margin-bottom:8px}
+    .success-state p{font-size:13px;color:#5C5B57;margin-bottom:20px;line-height:1.6}
+    .error-state{text-align:center;padding:32px 20px}
+    .spinner-wrap{text-align:center;padding:48px}
+    .spinner-dark{width:32px;height:32px;border:3px solid #E5E4E0;border-top-color:#D85A30;border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 16px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .test-badge{background:#FEF3C7;border:1px solid #F59E0B;border-radius:8px;padding:8px 12px;font-size:12px;color:#92400E;margin-bottom:16px;text-align:center}
+  </style>
+</head>
+<body>
+
+<div class="pay-wrap">
+  <a href="/fan/account.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#5C5B57;font-weight:500;margin-bottom:16px;text-decoration:none">← Back to bookings</a>
+
+  <div class="pay-card" id="pay-card">
+    <div class="spinner-wrap"><div class="spinner-dark"></div>Loading payment details…</div>
+  </div>
+</div>
+
+<script>
+const API = 'http://127.0.0.1:5000';
+const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
+
+function getSession() {
+  const token = localStorage.getItem('sb_token') || localStorage.getItem('sc_token') || localStorage.getItem('token');
+  const user  = localStorage.getItem('sb_user')  || localStorage.getItem('sc_user')  || localStorage.getItem('user');
+  if (!token || !user) return null;
+  try { return { token, user: JSON.parse(user) }; } catch { return null; }
+}
+
+async function loadPayment() {
+  const params = new URLSearchParams(window.location.search);
+  const bid    = params.get('booking_id');
+  const s      = getSession();
+
+  if (!bid)  { showError('No booking specified.'); return; }
+  if (!s)    { window.location.href = '/fan/login.html'; return; }
+
+  // Fetch booking details
+  const res = await fetch(`${API}/api/fan/bookings`, {
+    headers: {'Authorization': `Bearer ${s.token}`}
+  }).then(r=>r.json()).catch(()=>({bookings:[]}));
+
+  const booking = (res.bookings||[]).find(b => String(b.id) === String(bid));
+  if (!booking) { showError('Booking not found.'); return; }
+
+  if (booking.payment_status === 'paid') {
+    showSuccess(booking); return;
+  }
+
+  const fanTotal    = booking.fan_total || booking.amount || 0;
+  const platformFee = Math.round(fanTotal * 0.05);
+  const creatorAmt  = fanTotal - platformFee;
+
+  document.getElementById('pay-card').innerHTML = `
+    <div class="pay-header">
+      <div class="ph-glow"></div>
+      <div class="ph-logo">Scri<span>Buz</span></div>
+      <div class="ph-label">Amount to pay</div>
+      <div class="ph-amount"><span>₹</span>${(fanTotal).toLocaleString('en-IN')}</div>
+      <div class="ph-creator">Experience with ${booking.creator_name || 'Creator'}</div>
+    </div>
+    <div class="pay-body">
+      <div class="test-badge">🧪 Test mode — no real money will be charged</div>
+      <div class="pay-row"><span class="pay-label">Experience</span><span class="pay-val">${booking.event_type || 'Private Experience'}</span></div>
+      <div class="pay-row"><span class="pay-label">Date</span><span class="pay-val">${booking.event_date ? new Date(booking.event_date).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : 'TBD'}</span></div>
+      <div class="pay-row"><span class="pay-label">Guests</span><span class="pay-val">${booking.guests || 1}</span></div>
+      <div class="pay-row"><span class="pay-label">Creator fee</span><span class="pay-val">${fmt(creatorAmt)}</span></div>
+      <div class="pay-row"><span class="pay-label">Platform fee (5%)</span><span class="pay-val muted">${fmt(platformFee)}</span></div>
+      <div class="divider"></div>
+      <div class="pay-row"><span class="pay-label" style="font-weight:700">Total</span><span class="pay-val green" style="font-size:16px">${fmt(fanTotal)}</span></div>
+      <button class="pay-btn" id="pay-btn" onclick="startPayment(${booking.id}, ${fanTotal})">
+        🔒 Pay ${fmt(fanTotal)} Securely
+      </button>
+      <div class="secure-badges">
+        <span class="secure-badge">🔒 256-bit SSL</span>
+        <span class="secure-badge">✅ Escrow protected</span>
+        <span class="secure-badge">↩️ Refundable</span>
+      </div>
+    </div>`;
+}
+
+async function startPayment(bookingId, amount) {
+  const s   = getSession();
+  const btn = document.getElementById('pay-btn');
+  btn.disabled = true; btn.innerHTML = '⏳ Initiating payment…';
+
+  const order = await fetch(`${API}/api/payment/create-order`, {
+    method: 'POST',
+    headers: {'Authorization': `Bearer ${s.token}`, 'Content-Type': 'application/json'},
+    body: JSON.stringify({booking_id: bookingId, fan_name: s.user.name, fan_email: s.user.email || ''})
+  }).then(r=>r.json()).catch(()=>({success:false, message:'Network error'}));
+
+  if (!order.success) {
+    btn.disabled = false; btn.innerHTML = '🔒 Pay Securely';
+    alert('Could not create order: ' + order.message); return;
+  }
+
+  // Mock payment (no real Razorpay keys)
+  if (order.mock) {
+    btn.innerHTML = '⏳ Processing test payment…';
+    await new Promise(r => setTimeout(r, 1500)); // simulate delay
+
+    const verify = await fetch(`${API}/api/payment/verify`, {
+      method: 'POST',
+      headers: {'Authorization': `Bearer ${s.token}`, 'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        booking_id:          bookingId,
+        razorpay_order_id:   order.order_id,
+        razorpay_payment_id: 'pay_test_' + Math.random().toString(36).substring(2,12),
+        razorpay_signature:  'mock_signature'
+      })
+    }).then(r=>r.json()).catch(()=>({success:false}));
+
+    if (verify.success) {
+      const bks = await fetch(`${API}/api/fan/bookings`, {
+        headers: {'Authorization': `Bearer ${s.token}`}
+      }).then(r=>r.json()).catch(()=>({bookings:[]}));
+      const b = (bks.bookings||[]).find(x=>String(x.id)===String(bookingId));
+      showSuccess(b || {id: bookingId, amount});
+    } else {
+      btn.disabled = false; btn.innerHTML = '🔒 Pay Securely';
+      alert('Payment verification failed.');
+    }
+    return;
+  }
+
+  // Real Razorpay checkout
+  const rzp = new Razorpay({
+    key:         order.key,
+    amount:      order.amount,
+    currency:    'INR',
+    order_id:    order.order_id,
+    name:        'ScriBuz',
+    description: 'Private Creator Experience',
+    image:       '',
+    prefill:     { name: s.user.name, email: order.fan_email },
+    theme:       { color: '#D85A30' },
+    handler: async function(response) {
+      btn.innerHTML = '⏳ Verifying payment…';
+      const verify = await fetch(`${API}/api/payment/verify`, {
+        method: 'POST',
+        headers: {'Authorization': `Bearer ${s.token}`, 'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          booking_id:          bookingId,
+          razorpay_order_id:   response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature:  response.razorpay_signature
+        })
+      }).then(r=>r.json());
+      if (verify.success) {
+        const bks = await fetch(`${API}/api/fan/bookings`, {
+          headers: {'Authorization': `Bearer ${s.token}`}
+        }).then(r=>r.json()).catch(()=>({bookings:[]}));
+        const b = (bks.bookings||[]).find(x=>String(x.id)===String(bookingId));
+        showSuccess(b || {id: bookingId});
+      } else {
+        btn.disabled = false; btn.innerHTML = '🔒 Pay Securely';
+        alert('Payment verification failed. Contact support.');
+      }
+    },
+    modal: { ondismiss: () => { btn.disabled=false; btn.innerHTML='🔒 Pay Securely'; } }
+  });
+  rzp.open();
+}
+
+function showSuccess(booking) {
+  const fanTotal   = booking.fan_total || booking.amount || 0;
+  const refCode    = 'SBZ-' + String(booking.id).padStart(6,'0');
+  document.getElementById('pay-card').innerHTML = `
+    <div class="pay-body">
+      <div class="success-state">
+        <div class="success-icon">🎉</div>
+        <h2>Payment successful!</h2>
+        <p>Your booking is confirmed. The creator will be in touch soon. Your experience awaits!</p>
+        <div style="background:#EAF3DE;border:1px solid #97C459;border-radius:10px;padding:14px;margin-bottom:20px;text-align:left">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#27500A;margin-bottom:8px">Payment summary</div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:#3d6b14">Amount paid</span><strong style="color:#27500A">${fmt(fanTotal)}</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#3d6b14">Booking ref</span><strong style="color:#27500A;font-family:monospace">${refCode}</strong></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <a href="/fan/ticket.html?id=${booking.id}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:#D85A30;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">🎟 View Your Ticket</a>
+          <a href="/fan/account.html" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:#F3F2EF;color:#1A1A18;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none">← Back to My Bookings</a>
+        </div>
+      </div>
+    </div>`;
+}
+
+function showError(msg) {
+  document.getElementById('pay-card').innerHTML = `
+    <div class="pay-body">
+      <div class="error-state">
+        <div style="font-size:3rem;margin-bottom:12px">❌</div>
+        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:8px">Something went wrong</h2>
+        <p style="font-size:13px;color:#5C5B57">${msg}</p>
+        <a href="/fan/account.html" style="display:inline-block;margin-top:16px;padding:10px 20px;background:#D85A30;color:#fff;border-radius:8px;font-weight:600;text-decoration:none">← Go back</a>
+      </div>
+    </div>`;
+}
+
+loadPayment();
+</script>
+</body>
+</html>

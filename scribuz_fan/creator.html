@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Creator Profile – ScriBuz</title>
+  <link rel="stylesheet" href="/fan/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#1a1a2e;min-height:100vh}
+
+    .nav{background:#fff;border-bottom:1px solid #e5e7eb;padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .nav-brand{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#7c3aed,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .nav-links{display:flex;align-items:center;gap:1rem}
+    .nav-links a{text-decoration:none;color:#374151;font-size:.9rem;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:#7c3aed}
+    .btn{padding:.5rem 1.1rem;border-radius:8px;font-size:.875rem;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
+    .btn-ghost{background:transparent;color:#7c3aed;border:1.5px solid #7c3aed}
+    .btn-ghost:hover{background:#f5f3ff}
+    .btn-primary{background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff}
+    .btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-outline{background:#fff;color:#374151;border:1.5px solid #e5e7eb}
+    .btn-outline:hover{border-color:#7c3aed;color:#7c3aed}
+    #userMenu{display:none;align-items:center;gap:.75rem}
+    #userGreeting{font-size:.875rem;color:#374151;font-weight:500}
+
+    .cover-wrap{position:relative;height:280px;background:linear-gradient(135deg,#1e1b4b 0%,#4c1d95 40%,#831843 70%,#1e3a5f 100%);overflow:hidden}
+    .cover-wrap img.cover-img{width:100%;height:100%;object-fit:cover;opacity:.7}
+    .cover-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,transparent 60%)}
+
+    .page-wrap{max-width:1200px;margin:0 auto;padding:0 1.5rem 3rem}
+    .profile-grid{display:grid;grid-template-columns:320px 1fr;gap:1.5rem;margin-top:-80px;position:relative;z-index:1}
+
+    .sidebar{display:flex;flex-direction:column;gap:1rem}
+    .card{background:#fff;border-radius:16px;padding:1.25rem;border:1px solid #e5e7eb}
+
+    .avatar-card{text-align:center;padding-bottom:1.5rem}
+    .avatar-wrap-pos{position:relative;display:inline-block;margin:0 auto 1rem}
+    .avatar-ring{width:110px;height:110px;border-radius:50%;border:4px solid #fff;box-shadow:0 4px 20px rgba(0,0,0,.15);overflow:hidden;background:#ddd}
+    .avatar-ring img{width:100%;height:100%;object-fit:cover;display:block}
+    .avatar-initials{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;border:4px solid #fff;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+    .online-dot{width:14px;height:14px;background:#10b981;border-radius:50%;border:2px solid #fff;position:absolute;bottom:6px;right:6px}
+    .creator-name{font-size:1.25rem;font-weight:700;color:#111}
+    .creator-handle{color:#6b7280;font-size:.875rem;margin:.2rem 0 .6rem}
+    .creator-category{display:inline-block;background:#f5f3ff;color:#7c3aed;font-size:.75rem;font-weight:600;padding:.25rem .75rem;border-radius:20px;margin-bottom:.75rem}
+    .star-row{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:.5rem}
+    .star-row i{color:#f59e0b;font-size:.9rem}
+    .rating-text{font-size:.8rem;color:#6b7280;margin-left:4px}
+    .bio-text{font-size:.875rem;color:#4b5563;line-height:1.6;margin:.75rem 0}
+    .action-btns{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+    .action-btns .btn{justify-content:center;width:100%}
+
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .stat-box{background:#f9fafb;border-radius:10px;padding:.75rem;text-align:center}
+    .stat-num{font-size:1.2rem;font-weight:700;color:#111}
+    .stat-lbl{font-size:.7rem;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+
+    .social-links{display:flex;flex-direction:column;gap:.5rem}
+    .social-item{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:#374151;font-size:.875rem;padding:.4rem .5rem;border-radius:8px;transition:background .2s}
+    .social-item:hover{background:#f5f3ff;color:#7c3aed}
+    .social-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;flex-shrink:0}
+    .si-instagram{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)}
+    .si-youtube{background:#ff0000}
+    .si-website{background:#6b7280}
+    .card-title{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9ca3af;margin-bottom:.75rem}
+
+    .main-col{display:flex;flex-direction:column;gap:1rem}
+    .info-bar{background:#fff;border-radius:16px;padding:1rem 1.25rem;border:1px solid #e5e7eb;display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center}
+    .info-chip{display:flex;align-items:center;gap:.4rem;font-size:.85rem;color:#4b5563}
+    .info-chip i{color:#7c3aed;font-size:.95rem}
+
+    .tabs-bar{background:#fff;border-radius:16px;border:1px solid #e5e7eb;overflow:hidden}
+    .tab-nav{display:flex;border-bottom:1px solid #e5e7eb;padding:0 1rem;overflow-x:auto}
+    .tab-btn{padding:.8rem 1rem;font-size:.875rem;font-weight:600;color:#6b7280;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;white-space:nowrap}
+    .tab-btn.active{color:#7c3aed;border-bottom-color:#7c3aed}
+    .tab-content{padding:1.25rem}
+    .tab-pane{display:none}
+    .tab-pane.active{display:block}
+
+    .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem}
+    .media-item{border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;background:#f9fafb;aspect-ratio:1;position:relative;cursor:pointer;transition:transform .2s,box-shadow .2s}
+    .media-item:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
+    .media-item img{width:100%;height:100%;object-fit:cover;display:block}
+    .media-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff;font-size:.7rem;padding:.5rem .5rem .35rem;opacity:0;transition:opacity .2s}
+    .media-item:hover .media-caption{opacity:1}
+
+    .reviews-list{display:flex;flex-direction:column;gap:.75rem}
+    .review-card{background:#f9fafb;border-radius:12px;padding:1rem}
+    .review-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem}
+    .reviewer-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#ec4899);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:700;flex-shrink:0}
+    .reviewer-name{font-size:.875rem;font-weight:600;color:#111}
+    .review-date{font-size:.75rem;color:#9ca3af}
+    .review-stars i{font-size:.75rem;color:#f59e0b}
+    .review-text{font-size:.85rem;color:#4b5563;line-height:1.6;margin-top:.3rem}
+
+    .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .about-item{background:#f9fafb;border-radius:10px;padding:.75rem 1rem;display:flex;align-items:center;gap:.6rem;font-size:.875rem;color:#374151}
+    .about-item i{color:#7c3aed;font-size:1rem;width:18px;text-align:center}
+
+    .book-cta{background:linear-gradient(135deg,#7c3aed,#ec4899);border-radius:16px;padding:2rem;text-align:center;color:#fff}
+    .book-cta h3{font-size:1.2rem;margin-bottom:.5rem}
+    .book-cta p{font-size:.875rem;opacity:.85;margin-bottom:1.25rem}
+    .book-cta .btn{background:#fff;color:#7c3aed;font-weight:700;padding:.75rem 2rem;font-size:1rem}
+
+    .center-msg{text-align:center;padding:3rem;color:#6b7280}
+    .center-msg i{font-size:2rem;display:block;margin-bottom:.75rem}
+    .spinner{animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .no-content{color:#9ca3af;font-size:.875rem;padding:1rem 0}
+
+    @media(max-width:900px){
+      .profile-grid{grid-template-columns:1fr}
+      .cover-wrap{height:200px}
+      .about-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/fan/index.html" class="nav-brand">ScriBuz</a>
+  <div class="nav-links">
+    <a href="/fan/browse.html">Browse</a>
+    <div id="authButtons">
+      <a href="/fan/login.html" class="btn btn-ghost">Login</a>
+      <a href="/fan/signup.html" class="btn btn-primary">Sign Up</a>
+    </div>
+    <div id="userMenu">
+      <span id="userGreeting"></span>
+      <button onclick="doLogout()" class="btn btn-outline">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<div class="cover-wrap" id="coverWrap">
+  <div class="cover-overlay"></div>
+</div>
+
+<div class="page-wrap">
+  <div id="loadingState" class="center-msg" style="margin-top:2rem">
+    <i class="fas fa-spinner spinner"></i>
+    Loading creator profile…
+  </div>
+
+  <div id="mainContent" style="display:none">
+    <div class="profile-grid">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="card avatar-card">
+          <div class="avatar-wrap-pos">
+            <div id="avatarEl"></div>
+            <div class="online-dot" id="onlineDot" style="display:none"></div>
+          </div>
+          <div class="creator-name" id="sidebarName"></div>
+          <div class="creator-handle" id="sidebarHandle"></div>
+          <div id="sidebarCategory" class="creator-category"></div>
+          <div class="star-row" id="starRow"></div>
+          <p class="bio-text" id="sidebarBio"></p>
+          <div class="action-btns">
+            <button class="btn btn-primary" id="bookBtn" onclick="handleBook()">
+              <i class="fas fa-calendar-check"></i> Book Now
+            </button>
+            <button class="btn btn-outline" id="wishlistBtn" onclick="handleWishlist()">
+              <i class="fas fa-heart"></i> Save
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Stats</div>
+          <div class="stats-grid" id="statsGrid"></div>
+        </div>
+
+        <div class="card" id="socialCard" style="display:none">
+          <div class="card-title">Find them on</div>
+          <div class="social-links" id="socialLinks"></div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="main-col">
+        <div class="info-bar" id="infoBar"></div>
+
+        <div class="tabs-bar">
+          <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab(this,'gallery')">
+              <i class="fas fa-images"></i> Gallery
+            </button>
+            <button class="tab-btn" onclick="switchTab(this,'reviews')">
+              <i class="fas fa-star"></i> Reviews
+            </button>
+            <button class="tab-btn" onclick="switchTab(this,'about')">
+              <i class="fas fa-info-circle"></i> About
+            </button>
+          </div>
+          <div class="tab-content">
+            <div id="tab-gallery" class="tab-pane active">
+              <div id="mediaGrid" class="media-grid"></div>
+            </div>
+            <div id="tab-reviews" class="tab-pane">
+              <div id="reviewsContainer" class="reviews-list"></div>
+            </div>
+            <div id="tab-about" class="tab-pane">
+              <div id="aboutContainer"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Book CTA banner -->
+        <div class="book-cta">
+          <h3 id="ctaTitle">Ready to book?</h3>
+          <p id="ctaPrice"></p>
+          <button class="btn" onclick="handleBook()">
+            <i class="fas fa-calendar-check"></i> Book This Creator
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="errorState" style="display:none" class="center-msg">
+    <i class="fas fa-exclamation-circle" style="color:#ef4444"></i>
+    <h2 style="margin-bottom:.5rem">Creator not found</h2>
+    <p style="margin-bottom:1rem">This profile doesn't exist or may not be approved yet.</p>
+    <a href="/fan/browse.html" class="btn btn-primary">Browse creators</a>
+  </div>
+</div>
+
+<script src="/fan/script.js"></script>
+<script>
+  // ── KEY FIX: use the SAME storage keys as script.js ──────────────────────
+  // script.js uses: sb_token / sb_user
+  // Previous version was looking for fanconnect_token / scribuz_token → always
+  // returned null → treated user as logged-out → redirected to login instead of book.html
+  function getStoredToken() {
+    return localStorage.getItem('sb_token') || '';
+  }
+  function getStoredUser() {
+    try { return JSON.parse(localStorage.getItem('sb_user')); } catch { return null; }
+  }
+  function doLogout() {
+    localStorage.removeItem('sb_token');
+    localStorage.removeItem('sb_user');
+    window.location.href = '/fan/index.html';
+  }
+
+  let creatorId = null, creatorData = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const p = new URLSearchParams(window.location.search);
+    creatorId = p.get('id');
+    setupNav();
+    if (!creatorId) { showError(); return; }
+    loadCreator();
+  });
+
+  function setupNav() {
+    const u = getStoredUser();
+    if (u && getStoredToken()) {
+      document.getElementById('authButtons').style.display = 'none';
+      document.getElementById('userMenu').style.display   = 'flex';
+      document.getElementById('userGreeting').textContent  = `Hi, ${u.name?.split(' ')[0] || 'Fan'} 👋`;
+    }
+  }
+
+  async function loadCreator() {
+    try {
+      const res = await fetch(`/api/creators/${creatorId}`);
+      if (!res.ok) { showError(); return; }
+      const data = await res.json();
+      if (!data.success) { showError(); return; }
+      creatorData = data.creator;
+      renderProfile(creatorData);
+      loadReviews();
+    } catch(e) {
+      console.error('loadCreator error:', e);
+      showError();
+    }
+  }
+
+  async function loadReviews() {
+    // Try the dedicated endpoint first (add it to app.py for full functionality)
+    // Falls back to whatever reviews are embedded in the creator object
+    try {
+      const res = await fetch(`/api/creators/${creatorId}/reviews`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) { renderReviews(data.reviews); return; }
+      }
+    } catch(_) {}
+    renderReviews(creatorData.reviews || []);
+  }
+
+  function renderProfile(c) {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('mainContent').style.display  = 'block';
+    document.title = `${c.name || 'Creator'} – ScriBuz`;
+
+    // Avatar — initials fallback
+    const initials = (c.name || '?').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    const avEl = document.getElementById('avatarEl');
+    if (c.avatar || c.profile_image) {
+      avEl.innerHTML = `<div class="avatar-ring"><img src="${esc(c.avatar || c.profile_image)}" alt="${esc(c.name)}"
+        onerror="this.parentElement.outerHTML='<div class=\\"avatar-initials\\">${initials}</div>'"></div>`;
+    } else {
+      avEl.innerHTML = `<div class="avatar-initials">${initials}</div>`;
+    }
+
+    // Cover from first gallery image if available
+    if (c.images && c.images.length) {
+      const img = document.createElement('img');
+      img.src = c.images[0].image_url || '';
+      img.className = 'cover-img';
+      document.getElementById('coverWrap').prepend(img);
+    }
+
+    document.getElementById('sidebarName').textContent     = c.name || '';
+    document.getElementById('sidebarHandle').textContent   = c.instagram
+      ? `@${c.instagram.replace('@', '')}`
+      : `@${(c.name || '').toLowerCase().replace(/\s+/g, '')}`;
+    document.getElementById('sidebarCategory').textContent = c.category || 'Creator';
+    document.getElementById('sidebarBio').textContent      = c.bio || '';
+
+    // Stars
+    const rating  = parseFloat(c.rating) || 0;
+    const totalEv = c.total_events || 0;
+    let stars = '';
+    for (let i = 1; i <= 5; i++)
+      stars += `<i class="fas fa-star" style="color:${i <= Math.round(rating) ? '#f59e0b' : '#e5e7eb'}"></i>`;
+    document.getElementById('starRow').innerHTML =
+      stars + `<span class="rating-text">${rating.toFixed(1)} (${totalEv} events)</span>`;
+
+    // Stats
+    const fmt2 = n => { n = Number(n)||0; if(n>=1e7) return (n/1e7).toFixed(1)+'Cr'; if(n>=1e5) return (n/1e5).toFixed(1)+'L'; if(n>=1e3) return (n/1e3).toFixed(1)+'K'; return String(n); };
+    document.getElementById('statsGrid').innerHTML = [
+      { num: fmt2(c.followers   || 0),         lbl: 'Followers'     },
+      { num: fmt2(c.total_events|| 0),          lbl: 'Events done'   },
+      { num: `₹${fmt2(c.price_from || 0)}`,     lbl: 'Starting price'},
+      { num: `${rating.toFixed(1)}★`,            lbl: 'Rating'        },
+    ].map(s => `<div class="stat-box"><div class="stat-num">${s.num}</div><div class="stat-lbl">${s.lbl}</div></div>`).join('');
+
+    // Info chips
+    const chips = [];
+    if (c.city)       chips.push(`<div class="info-chip"><i class="fas fa-map-marker-alt"></i>${esc(c.city)}</div>`);
+    if (c.experience) chips.push(`<div class="info-chip"><i class="fas fa-briefcase"></i>${esc(c.experience)}</div>`);
+    if (c.has_venue)  chips.push(`<div class="info-chip"><i class="fas fa-home"></i>Has own venue</div>`);
+    if (c.price_from) chips.push(`<div class="info-chip"><i class="fas fa-tag"></i>From ₹${fmt2(c.price_from)}</div>`);
+    document.getElementById('infoBar').innerHTML = chips.join('');
+
+    // Social links
+    const socials = [];
+    if (c.instagram) socials.push({ icon:'fa-brands fa-instagram', cls:'si-instagram',
+      label:`@${c.instagram.replace('@','')}`, url:`https://instagram.com/${c.instagram.replace('@','')}` });
+    if (c.youtube)   socials.push({ icon:'fa-brands fa-youtube', cls:'si-youtube',
+      label:'YouTube channel', url: c.youtube.startsWith('http') ? c.youtube : `https://youtube.com/@${c.youtube}` });
+    if (c.email)     socials.push({ icon:'fas fa-envelope', cls:'si-website',
+      label: c.email, url:`mailto:${c.email}` });
+    if (socials.length) {
+      document.getElementById('socialCard').style.display = 'block';
+      document.getElementById('socialLinks').innerHTML = socials.map(s => `
+        <a href="${esc(s.url)}" target="_blank" rel="noopener" class="social-item">
+          <span class="social-icon ${s.cls}"><i class="${s.icon}"></i></span>${esc(s.label)}
+          <i class="fas fa-external-link-alt" style="font-size:.7rem;color:#9ca3af;margin-left:auto"></i>
+        </a>`).join('');
+    }
+
+    renderGallery(c.images || []);
+    renderAbout(c);
+
+    // CTA banner
+    document.getElementById('ctaTitle').textContent  = `Book ${c.name}`;
+    document.getElementById('ctaPrice').textContent  = c.price_from
+      ? `Starting from ₹${Number(c.price_from).toLocaleString('en-IN')} · 5% platform fee applies`
+      : 'Contact for pricing';
+  }
+
+  function renderGallery(images) {
+    const g = document.getElementById('mediaGrid');
+    if (!images.length) { g.innerHTML = '<p class="no-content">No photos uploaded yet.</p>'; return; }
+    g.innerHTML = images.map(img => `
+      <div class="media-item" onclick="window.open('${esc(img.image_url||'')}','_blank')">
+        <img src="${esc(img.image_url||'')}" alt="${esc(img.caption||'')}" loading="lazy"
+             onerror="this.parentElement.style.display='none'">
+        ${img.caption ? `<div class="media-caption">${esc(img.caption)}</div>` : ''}
+      </div>`).join('');
+  }
+
+  function renderReviews(reviews) {
+    const c = document.getElementById('reviewsContainer');
+    if (!reviews || !reviews.length) {
+      c.innerHTML = '<p class="no-content">No reviews yet — be the first to book!</p>'; return;
+    }
+    c.innerHTML = reviews.map(r => {
+      const name = r.fan_name || r.reviewer_name || 'Fan';
+      const ini  = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      const stars= Array.from({length:5},(_,i)=>`<i class="fas fa-star" style="color:${i<(r.rating||5)?'#f59e0b':'#e5e7eb'}"></i>`).join('');
+      return `
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer-av">${ini}</div>
+            <div>
+              <div class="reviewer-name">${esc(name)}</div>
+              <div class="review-date">${fmtDate(r.created_at)}</div>
+            </div>
+            <div class="review-stars" style="margin-left:auto">${stars}</div>
+          </div>
+          <div class="review-text">${esc(r.comment || r.text || '')}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderAbout(c) {
+    const items = [
+      c.city       && { icon:'fa-map-marker-alt', text: c.city },
+      c.experience && { icon:'fa-briefcase',       text: c.experience },
+      c.category   && { icon:'fa-tag',             text: c.category },
+      c.has_venue  && { icon:'fa-home',             text: 'Has own venue' },
+      c.instagram  && { icon:'fa-brands fa-instagram', text: `<a href="https://instagram.com/${c.instagram.replace('@','')}" target="_blank" rel="noopener" style="color:#7c3aed">@${esc(c.instagram.replace('@',''))}</a>` },
+      c.youtube    && { icon:'fa-brands fa-youtube',   text: `<a href="${esc(c.youtube.startsWith('http')?c.youtube:'https://youtube.com/@'+c.youtube)}" target="_blank" rel="noopener" style="color:#7c3aed">YouTube</a>` },
+    ].filter(Boolean);
+    const grid = items.map(i=>`<div class="about-item"><i class="fas ${i.icon}"></i><span>${i.text}</span></div>`).join('');
+    const bio  = c.bio ? `<p style="font-size:.9rem;color:#4b5563;line-height:1.7;margin-top:1rem">${esc(c.bio)}</p>` : '';
+    document.getElementById('aboutContainer').innerHTML = `<div class="about-grid">${grid}</div>${bio}`;
+  }
+
+  function switchTab(btn, name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`tab-${name}`).classList.add('active');
+  }
+
+  // ── BOOK BUTTON — THE ACTUAL FIX ──────────────────────────────────────────
+  // Before: getToken() checked 'fanconnect_token'/'scribuz_token' → null →
+  //         redirected to login.html (not book.html)
+  // Now: checks 'sb_token' (what script.js saves) → correct user found →
+  //      goes straight to /fan/book.html?id=X
+  function handleBook() {
+    if (!getStoredToken()) {
+      window.location.href = `/fan/login.html?next=${encodeURIComponent(location.href)}`;
+      return;
+    }
+    window.location.href = `/fan/book.html?id=${creatorId}`;
+  }
+
+  async function handleWishlist() {
+    if (!getStoredToken()) {
+      window.location.href = `/fan/login.html?next=${encodeURIComponent(location.href)}`;
+      return;
+    }
+    const btn = document.getElementById('wishlistBtn');
+    btn.disabled = true;
+    try {
+      const res  = await fetch('/api/fan/wishlist', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+getStoredToken() },
+        body: JSON.stringify({ creator_id: parseInt(creatorId) })
+      });
+      const data = await res.json();
+      btn.innerHTML = data.success
+        ? '<i class="fas fa-heart" style="color:#ec4899"></i> Saved!'
+        : '<i class="fas fa-heart" style="color:#ec4899"></i> Already saved';
+    } catch {
+      btn.innerHTML = '<i class="fas fa-heart"></i> Save';
+    }
+    btn.disabled = false;
+  }
+
+  function showError() {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('mainContent').style.display  = 'none';
+    document.getElementById('errorState').style.display   = 'block';
+  }
+
+  function fmtDate(s) {
+    if (!s) return '';
+    try { return new Date(s).toLocaleDateString('en-IN',{year:'numeric',month:'short',day:'numeric'}); } catch { return ''; }
+  }
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>

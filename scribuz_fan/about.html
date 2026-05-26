@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About ScriBuz</title>
+  <link rel="stylesheet" href="/fan/style.css">
+  <style>
+    .about-hero{background:var(--text);padding:100px 2rem 64px;text-align:center;position:relative;overflow:hidden}
+    .about-hero-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(216,90,48,.15),transparent 70%);pointer-events:none}
+    .about-hero h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:700;letter-spacing:-2px;color:#fff;margin-bottom:14px;position:relative;line-height:1.1}
+    .about-hero p{font-size:17px;color:rgba(255,255,255,.55);max-width:500px;margin:0 auto;line-height:1.75;position:relative}
+    .about-body{max-width:1060px;margin:0 auto;padding:60px 2rem}
+    .about-mission{max-width:720px;margin:0 auto;text-align:center;margin-bottom:60px}
+    .about-mission h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;letter-spacing:-1px;margin-bottom:16px;line-height:1.2}
+    .about-mission p{font-size:16px;color:var(--text2);line-height:1.85;margin-bottom:14px}
+    .stats-band{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:40px 2rem;margin:0 0 60px}
+    .stats-band-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;text-align:center}
+    .sbn{font-size:2.2rem;font-weight:700;color:var(--orange);letter-spacing:-1px}
+    .sbl{font-size:13px;color:var(--text3);margin-top:4px;line-height:1.4}
+    .story-section{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:60px}
+    .story-quote{background:var(--bg2);border-left:4px solid var(--orange);border-radius:0 var(--rl) var(--rl) 0;padding:28px;font-size:16px;font-style:italic;color:var(--text2);line-height:1.8;margin:20px 0}
+    .values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:60px}
+    .val-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--rl);padding:28px;box-shadow:var(--shadow);transition:.2s}
+    .val-card:hover{border-color:var(--orange2);transform:translateY(-3px);box-shadow:0 6px 24px rgba(216,90,48,.1)}
+    .val-icon{width:48px;height:48px;background:#FAECE7;border:1px solid #F0997B;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px}
+    .val-title{font-size:15px;font-weight:700;margin-bottom:6px}
+    .val-desc{font-size:13px;color:var(--text2);line-height:1.65}
+    .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:60px}
+    .team-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--rl);padding:28px;text-align:center;box-shadow:var(--shadow);transition:.2s}
+    .team-card:hover{border-color:var(--orange2);transform:translateY(-3px)}
+    .team-av{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 14px}
+    .team-name{font-size:15px;font-weight:700;margin-bottom:3px}
+    .team-role{font-size:12px;color:var(--orange);font-weight:600;margin-bottom:8px}
+    .team-bio{font-size:13px;color:var(--text2);line-height:1.6}
+    .about-cta{background:var(--text);border-radius:var(--rl);padding:48px;text-align:center;position:relative;overflow:hidden}
+    .about-cta-glow{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:500px;height:200px;background:radial-gradient(ellipse,rgba(216,90,48,.15),transparent 70%);pointer-events:none}
+    .about-cta h2{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;color:#fff;letter-spacing:-1px;margin-bottom:10px;position:relative}
+    .about-cta p{font-size:15px;color:rgba(255,255,255,.5);margin-bottom:28px;position:relative}
+    .about-cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative}
+    .btn-lt{display:inline-flex;padding:12px 28px;border-radius:var(--r);border:1.5px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.8);font-size:14px;font-weight:600;transition:.2s}
+    .btn-lt:hover{border-color:rgba(255,255,255,.5);color:#fff}
+    @media(max-width:900px){.story-section,.values-grid,.team-grid{grid-template-columns:1fr}.stats-band-inner{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a href="/fan/index.html" class="logo"><span class="scri">Scri</span><span class="buz">Buz</span></a>
+    <div class="nav-links">
+      <a href="/fan/browse.html" class="nav-link">Browse</a>
+      <a href="/fan/how-it-works.html" class="nav-link">How It Works</a>
+      <a href="/fan/about.html" class="nav-link" style="color:var(--orange)">About</a>
+    </div>
+    <div class="nav-actions" id="nav-actions"></div>
+  </div>
+</nav>
+
+<div class="about-hero">
+  <div class="about-hero-glow"></div>
+  <div class="badge" style="position:relative;margin-bottom:20px"><div class="bdot"></div>Made in Hyderabad · 2026</div>
+  <h1>We believe fans deserve<br><span class="accent">more than a screen.</span></h1>
+  <p>ScriBuz was built to close the distance between creators and the people who truly love them.</p>
+</div>
+
+<div class="about-body">
+
+  <!-- MISSION -->
+  <div class="about-mission">
+    <div class="sec-label">Our mission</div>
+    <h2>The internet brought creators to millions.<br>We bring fans to creators.</h2>
+    <p>For years, fans have watched, liked, shared and subscribed. They have followed creators through every upload, every story, every live stream. But the relationship has always been one-sided — you on your phone, them on a screen.</p>
+    <p>ScriBuz exists to change that. We built a platform where that subscriber relationship becomes something real — a private dinner, a personal coaching session, an intimate performance. A memory that lasts.</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-band">
+    <div class="stats-band-inner">
+      <div><div class="sbn">30+</div><div class="sbl">Verified creators<br>in Hyderabad</div></div>
+      <div><div class="sbn">₹8K</div><div class="sbl">Starting price<br>for an experience</div></div>
+      <div><div class="sbn">100%</div><div class="sbl">Escrow protected<br>payments</div></div>
+      <div><div class="sbn">48h</div><div class="sbl">Creator response<br>guarantee</div></div>
+    </div>
+  </div>
+
+  <!-- STORY -->
+  <div class="story-section">
+    <div>
+      <div class="sec-label">Our story</div>
+      <h2 class="sec-title">It started with a question.</h2>
+      <p style="font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px">We were fans too. We watched the same food creators, followed the same fitness coaches, laughed at the same comedians. And one day someone asked — <em>"wouldn't it be incredible to actually meet them?"</em></p>
+      <p style="font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px">Not at a chaotic meet-and-greet where you get 30 seconds and a blurry photo. A real experience. Intimate. Personal. Something you would remember.</p>
+      <div class="story-quote">"We didn't build ScriBuz for fans who want autographs. We built it for fans who want connection — real, human, in-person connection."</div>
+      <p style="font-size:15px;color:var(--text2);line-height:1.85">We launched in Hyderabad in 2026. Phase 1 is just the beginning. Every city in India will have its own ScriBuz community.</p>
+    </div>
+    <div>
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--rl);padding:28px;box-shadow:var(--shadow);border-top:3px solid #6366F1;margin-bottom:16px">
+        <div style="font-size:14px;font-weight:600;margin-bottom:4px">Arjun R. <span style="font-size:12px;color:var(--text3);font-weight:400">· Fan · 3 years subscribed</span></div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.75;font-style:italic;border-left:3px solid var(--border);padding-left:12px">"I've watched Chef Aryan for 3 years. When I finally sat at his table and tasted his biryani — I couldn't speak. My hands were shaking. Not because of the food. Because it was real."</div>
+      </div>
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--rl);padding:28px;box-shadow:var(--shadow);border-top:3px solid var(--orange)">
+        <div style="font-size:14px;font-weight:600;margin-bottom:4px">Chef Aryan <span style="font-size:12px;color:var(--text3);font-weight:400">· Creator · 280K subscribers</span></div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.75;font-style:italic;border-left:3px solid var(--border);padding-left:12px">"4 years cooking on camera. I had never watched someone's face change when the food hit. That moment — ScriBuz gave me that. It's why I started cooking."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VALUES -->
+  <div class="sec-label" style="margin-bottom:8px">What we stand for</div>
+  <h2 class="sec-title" style="margin-bottom:24px">Our values</h2>
+  <div class="values-grid">
+    <div class="val-card"><div class="val-icon">🤝</div><div class="val-title">Real connections</div><div class="val-desc">We exist to create genuine human moments between creators and fans — not transactional fan service.</div></div>
+    <div class="val-card"><div class="val-icon">🔒</div><div class="val-title">Safety first</div><div class="val-desc">Every creator is verified. Every payment is escrowed. Every experience is backed by our support team.</div></div>
+    <div class="val-card"><div class="val-icon">⚖️</div><div class="val-title">Creator control</div><div class="val-desc">Creators set their price, accept or reject every booking. Their experience is always theirs to own.</div></div>
+    <div class="val-card"><div class="val-icon">💰</div><div class="val-title">Fair economics</div><div class="val-desc">5% platform fee. Creators keep the rest. We only succeed when creators and fans both do.</div></div>
+    <div class="val-card"><div class="val-icon">🌍</div><div class="val-title">Built for India</div><div class="val-desc">Designed for Indian creators, Indian fans, and the Indian digital culture that is unlike anywhere else.</div></div>
+    <div class="val-card"><div class="val-icon">🚀</div><div class="val-title">Always growing</div><div class="val-desc">Hyderabad is Phase 1. We are building toward every city, every category, every creator in India.</div></div>
+  </div>
+
+  <!-- TEAM -->
+  <div class="sec-label" style="margin-bottom:8px">The team</div>
+  <h2 class="sec-title" style="margin-bottom:24px">Who's building ScriBuz</h2>
+  <div class="team-grid">
+    <div class="team-card"><div class="team-av bg1">👨‍💻</div><div class="team-name">Founder</div><div class="team-role">CEO & Product</div><div class="team-bio">Building the platform that closes the gap between creators and the people who love them.</div></div>
+    <div class="team-card"><div class="team-av bg2">🎨</div><div class="team-name">Design Lead</div><div class="team-role">Design & Experience</div><div class="team-bio">Making sure every interaction on ScriBuz feels as premium as the experiences we facilitate.</div></div>
+    <div class="team-card"><div class="team-av bg3">📱</div><div class="team-name">Creator Relations</div><div class="team-role">Partnerships & Growth</div><div class="team-bio">Working directly with creators to onboard them and help them build real income on the platform.</div></div>
+  </div>
+
+  <!-- CTA -->
+  <div class="about-cta">
+    <div class="about-cta-glow"></div>
+    <h2>Want to be part of this?</h2>
+    <p>Whether you're a fan or a creator — there's a place for you at ScriBuz.</p>
+    <div class="about-cta-btns">
+      <a href="/fan/browse.html" class="btn btn-primary btn-large">Browse creators →</a>
+      <a href="/fan/signup.html" class="btn-lt">Create free account</a>
+    </div>
+  </div>
+
+</div>
+
+<footer id="footer"></footer>
+<div id="toast" class="toast"></div>
+<script src="/fan/script.js"></script>
+<script>
+function updateNav(){const el=document.getElementById('nav-actions');if(!el)return;const t=localStorage.getItem('sb_token');const u=JSON.parse(localStorage.getItem('sb_user')||'null');if(t&&u){el.innerHTML=`<a href="/fan/account.html" class="btn-ghost" style="font-size:13px">Hi, ${u.name.split(' ')[0]} 👋</a><button class="btn-ghost" onclick="localStorage.clear();location.href='/fan/index.html'">Log out</button>`;}else{el.innerHTML=`<a href="/fan/login.html" class="btn-ghost">Log in</a><a href="/fan/signup.html" class="btn btn-primary" style="font-size:13px;padding:8px 18px">Get started</a>`;}}
+updateNav();renderFooter();
+</script>
+</body>
+</html>

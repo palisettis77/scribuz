@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Your Ticket — ScriBuz</title>
+  <link rel="stylesheet" href="/fan/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body{background:#F0EFE9;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px 60px}
+    .ticket-wrap{width:100%;max-width:440px}
+    .ticket-header{text-align:center;margin-bottom:24px}
+    .ticket-header h1{font-size:1.4rem;font-weight:700;letter-spacing:-.5px;margin-bottom:6px}
+    .ticket-header p{font-size:13px;color:#5C5B57}
+    .ticket{background:#1A1A18;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative}
+    .ticket-top{padding:28px 28px 20px;position:relative}
+    .ticket-glow{position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(216,90,48,.25),transparent 70%);pointer-events:none}
+    .tlogo{font-size:16px;font-weight:700;color:#fff;letter-spacing:-.5px;margin-bottom:20px}
+    .tlogo span{background:linear-gradient(135deg,#D85A30,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .tlabel{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35);margin-bottom:4px}
+    .tvalue{font-size:15px;font-weight:700;color:#fff;margin-bottom:14px}
+    .tvalue.large{font-size:1.4rem;letter-spacing:-.5px;margin-bottom:18px}
+    .ticket-meta{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+    .ticket-divider{display:flex;align-items:center;position:relative;margin:0 -28px}
+    .td-line{flex:1;height:1px;background:rgba(255,255,255,.08)}
+    .td-cut{width:22px;height:22px;border-radius:50%;background:#F0EFE9;flex-shrink:0}
+    .ticket-bottom{padding:20px 28px 28px;display:flex;flex-direction:column;align-items:center;gap:14px}
+    .qr-box{background:#fff;border-radius:14px;padding:14px;display:inline-flex}
+    .ticket-ref{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.12em;font-family:monospace;margin-top:4px}
+
+    /* ID section at the bottom of ticket */
+    .ticket-ids{width:100%;background:rgba(255,255,255,.05);border-radius:10px;padding:12px 14px;margin-top:4px}
+    .ticket-id-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .ticket-id-row:last-child{margin-bottom:0}
+    .tid-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3)}
+    .tid-value{font-size:11px;font-weight:700;font-family:monospace;letter-spacing:.05em;color:rgba(255,255,255,.75)}
+
+    .status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700}
+    .status-confirmed{background:rgba(165,180,252,.15);border:1px solid rgba(165,180,252,.4);color:#A5B4FC}
+    .status-pending{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.4);color:#F59E0B}
+    .status-completed{background:rgba(151,196,89,.15);border:1px solid rgba(151,196,89,.4);color:#97C459}
+    .status-cancelled{background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.4);color:#F87171}
+
+    .ticket-actions{display:flex;gap:10px;margin-top:20px;width:100%}
+    .tact-btn{flex:1;padding:11px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:.18s;font-family:inherit}
+    .tact-primary{background:#D85A30;color:#fff}
+    .tact-primary:hover{background:#993C1D}
+    .tact-ghost{background:#F0EFE9;color:#1A1A18;border:1px solid #E5E4E0}
+    .tact-ghost:hover{background:#E5E4E0}
+
+    /* Creator info panel below ticket */
+    .creator-panel{margin-top:16px;background:#fff;border-radius:14px;border:1.5px solid #E5E4E0;padding:18px;width:100%}
+    .creator-panel h4{font-size:13px;font-weight:700;color:#1A1A18;margin-bottom:12px}
+    .creator-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #F0EFE9;font-size:12px}
+    .creator-row:last-child{border-bottom:none}
+    .cr-label{color:#9C9B96}
+    .cr-value{font-weight:600;color:#1A1A18}
+
+    /* Policy notice */
+    .policy-notice{margin-top:12px;background:#FFF8E1;border:1px solid #FFE082;border-radius:10px;padding:12px 14px;font-size:12px;color:#7B5C00;line-height:1.6;width:100%}
+
+    .back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#5C5B57;font-weight:500;margin-bottom:16px;text-decoration:none}
+    .back-link:hover{color:#D85A30}
+    .empty-ticket{text-align:center;padding:60px 20px;color:#5C5B57;background:#fff;border-radius:16px;border:1.5px solid #E5E4E0}
+    .empty-ticket h2{font-size:1.1rem;font-weight:700;margin-bottom:8px;color:#1A1A18}
+    .spinner-dark{width:28px;height:28px;border:2.5px solid rgba(0,0,0,.1);border-top-color:#D85A30;border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 16px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media print{.ticket-actions,.back-link,.policy-notice{display:none}}
+  </style>
+</head>
+<body>
+
+<div class="ticket-wrap">
+  <a class="back-link" href="/fan/account.html">← My bookings</a>
+
+  <div class="ticket-header">
+    <h1>🎟 Your Experience Ticket</h1>
+    <p>Show this at your experience. Your QR code is your proof of booking.</p>
+  </div>
+
+  <div id="ticket-container">
+    <div class="empty-ticket"><div class="spinner-dark"></div>Loading your ticket…</div>
+  </div>
+
+  <div id="creator-detail-panel" style="display:none"></div>
+
+  <div class="ticket-actions" id="ticket-actions" style="display:none">
+    <button class="tact-btn tact-ghost" onclick="window.print()">🖨 Print</button>
+    <button class="tact-btn tact-primary" onclick="shareTicket()">📤 Share</button>
+  </div>
+
+  <div id="policy-panel" style="display:none">
+    <div class="policy-notice">
+      📋 <strong>Cancellation Policy:</strong> Cancellations are only permitted before a creator accepts your booking. Once accepted, bookings are non-refundable except in cases where the creator cancels — in which case ScriBuz will issue a full refund. For help, email <a href="mailto:hello@scribuz.in" style="color:#D85A30;font-weight:600">hello@scribuz.in</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://127.0.0.1:5000';
+const fmtAmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
+
+function getSession() {
+  const token = localStorage.getItem('sb_token') || localStorage.getItem('sc_token');
+  const user  = localStorage.getItem('sb_user')  || localStorage.getItem('sc_user');
+  if (!token || !user) return null;
+  try { return { token, user: JSON.parse(user) }; } catch { return null; }
+}
+
+function getStatusClass(s) {
+  if (s === 'confirmed')  return 'status-confirmed';
+  if (s === 'completed')  return 'status-completed';
+  if (s === 'cancelled')  return 'status-cancelled';
+  return 'status-pending';
+}
+function getStatusLabel(s) {
+  if (s === 'confirmed')  return '✅ Confirmed';
+  if (s === 'completed')  return '🎉 Completed';
+  if (s === 'cancelled')  return '❌ Cancelled';
+  if (s === 'pending')    return '⏳ Awaiting creator response';
+  return s;
+}
+
+// Generate reference IDs (mirrors backend logic)
+function makeRefId(bookingId) {
+  return 'SBZ-' + String(bookingId).padStart(6, '0');
+}
+
+async function loadTicket() {
+  const params = new URLSearchParams(window.location.search);
+  const bid    = params.get('id');
+
+  if (!bid) {
+    document.getElementById('ticket-container').innerHTML =
+      '<div class="empty-ticket"><h2>No booking selected</h2><p>Go to your bookings and tap "View Ticket"</p><a href="/fan/account.html" style="display:inline-block;margin-top:12px;padding:10px 20px;background:#D85A30;color:#fff;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">← My bookings</a></div>';
+    return;
+  }
+
+  const s = getSession();
+  if (!s) {
+    window.location.href = '/fan/login.html?next=' + encodeURIComponent(window.location.href);
+    return;
+  }
+
+  const res = await fetch(`${API}/api/fan/bookings`, {
+    headers: { 'Authorization': `Bearer ${s.token}` }
+  }).then(r => r.json()).catch(() => ({ bookings: [] }));
+
+  const booking = (res.bookings || []).find(b => String(b.id) === String(bid));
+
+  if (!booking) {
+    document.getElementById('ticket-container').innerHTML =
+      '<div class="empty-ticket"><h2>Booking not found</h2><p>This ticket may not belong to your account.</p><a href="/fan/account.html" style="display:inline-block;margin-top:12px;padding:10px 20px;background:#D85A30;color:#fff;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">← My bookings</a></div>';
+    return;
+  }
+
+  const dt = booking.event_date
+    ? new Date(booking.event_date).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+    : 'Date to be confirmed';
+
+  // IDs
+  const refId         = booking.ref_id         || makeRefId(booking.id);
+  const reservationId = booking.reservation_id || ('RSV-' + String(booking.id).padStart(6,'0'));
+  const bookingId     = 'BK-' + String(booking.id).padStart(6, '0');
+
+  // QR data — includes all key reference info
+  const qrData = JSON.stringify({
+    booking_id:     booking.id,
+    ref_id:         refId,
+    reservation_id: reservationId,
+    fan:            s.user.name,
+    creator:        booking.creator_name || '',
+    event:          booking.event_type   || 'Experience',
+    date:           booking.event_date   || ''
+  });
+
+  document.getElementById('ticket-container').innerHTML = `
+    <div class="ticket">
+      <div class="ticket-top">
+        <div class="ticket-glow"></div>
+        <div class="tlogo">Scri<span>Buz</span></div>
+
+        <div class="tlabel">Experience</div>
+        <div class="tvalue large">${booking.event_type || 'Private Experience'}</div>
+
+        <div class="ticket-meta">
+          <div>
+            <div class="tlabel">Fan name</div>
+            <div class="tvalue">${s.user.name}</div>
+          </div>
+          <div>
+            <div class="tlabel">Creator</div>
+            <div class="tvalue">${booking.creator_name || '—'}</div>
+          </div>
+          <div>
+            <div class="tlabel">Date</div>
+            <div class="tvalue" style="font-size:13px">${dt}</div>
+          </div>
+          <div>
+            <div class="tlabel">Guests</div>
+            <div class="tvalue">${booking.guests || 1} person${(booking.guests||1)>1?'s':''}</div>
+          </div>
+          <div>
+            <div class="tlabel">Amount paid</div>
+            <div class="tvalue" style="color:#97C459">${fmtAmt(booking.fan_total||booking.amount||0)}</div>
+          </div>
+          <div>
+            <div class="tlabel">Status</div>
+            <div style="margin-top:4px">
+              <span class="status-badge ${getStatusClass(booking.status)}">${getStatusLabel(booking.status)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ticket-divider">
+        <div class="td-line"></div><div class="td-cut"></div>
+        <div class="td-line"></div><div class="td-cut"></div>
+        <div class="td-line"></div>
+      </div>
+
+      <div class="ticket-bottom">
+        <div class="qr-box" id="qr-render"></div>
+        <div class="ticket-ref">${refId}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px;text-align:center">Show this QR at your experience</div>
+
+        <!-- Reference IDs block -->
+        <div class="ticket-ids">
+          <div class="ticket-id-row">
+            <span class="tid-label">Booking ID</span>
+            <span class="tid-value">${bookingId}</span>
+          </div>
+          <div class="ticket-id-row">
+            <span class="tid-label">Reference ID</span>
+            <span class="tid-value">${refId}</span>
+          </div>
+          <div class="ticket-id-row">
+            <span class="tid-label">Reservation ID</span>
+            <span class="tid-value">${reservationId}</span>
+          </div>
+          <div class="ticket-id-row">
+            <span class="tid-label">Payment</span>
+            <span class="tid-value" style="color:${booking.payment_status==='paid'?'#97C459':'#F59E0B'}">${(booking.payment_status||'unpaid').toUpperCase()}</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  // Generate QR
+  new QRCode(document.getElementById('qr-render'), {
+    text: qrData, width: 160, height: 160,
+    colorDark: '#1A1A18', colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+
+  // Creator detail panel
+  const creatorPanel = document.getElementById('creator-detail-panel');
+  creatorPanel.style.display = 'block';
+  creatorPanel.innerHTML = `
+    <div class="creator-panel">
+      <h4>🎬 Creator Details</h4>
+      <div class="creator-row"><span class="cr-label">Name</span><span class="cr-value">${booking.creator_name||'—'}</span></div>
+      <div class="creator-row"><span class="cr-label">Category</span><span class="cr-value">${booking.creator_category||'—'}</span></div>
+      ${booking.creator_instagram?`<div class="creator-row"><span class="cr-label">Instagram</span><a href="https://instagram.com/${booking.creator_instagram.replace('@','')}" target="_blank" class="cr-value" style="color:#D85A30">@${booking.creator_instagram.replace('@','')}</a></div>`:''}
+      ${booking.creator_city?`<div class="creator-row"><span class="cr-label">Location</span><span class="cr-value">📍 ${booking.creator_city}</span></div>`:''}
+      <div class="creator-row"><span class="cr-label">Experience type</span><span class="cr-value">${booking.event_type||'Experience'}</span></div>
+      <div class="creator-row"><span class="cr-label">Guests</span><span class="cr-value">${booking.guests||1}</span></div>
+      <div class="creator-row" style="border-bottom:none"><span class="cr-label">Support</span><a href="mailto:hello@scribuz.in" class="cr-value" style="color:#D85A30">hello@scribuz.in</a></div>
+    </div>`;
+
+  document.getElementById('ticket-actions').style.display = 'flex';
+  document.getElementById('policy-panel').style.display   = 'block';
+}
+
+async function shareTicket() {
+  const url = window.location.href;
+  if (navigator.share) {
+    await navigator.share({ title: 'My ScriBuz Ticket', text: 'Check out my experience ticket!', url });
+  } else {
+    await navigator.clipboard.writeText(url);
+    alert('Ticket link copied to clipboard!');
+  }
+}
+
+loadTicket();
+</script>
+</body>
+</html>

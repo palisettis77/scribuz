@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Log In — ScriBuz</title>
+  <link rel="stylesheet" href="/fan/style.css">
+</head>
+<body onload="initLogin()">
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-left-glow"></div>
+    <a href="/fan/index.html" class="auth-left-logo">Scri<span class="buz">Buz</span></a>
+    <div class="auth-left-content">
+      <h2>Welcome back.<br>Your table awaits.</h2>
+      <p>Log in to manage your bookings, chat with creators, and discover new experiences.</p>
+      <div class="auth-perks">
+        <div class="auth-perk"><div class="auth-perk-icon">📋</div><div class="auth-perk-text"><strong>Track your bookings</strong> from request to experience</div></div>
+        <div class="auth-perk"><div class="auth-perk-icon">💬</div><div class="auth-perk-text"><strong>Chat directly</strong> with your booked creator</div></div>
+        <div class="auth-perk"><div class="auth-perk-icon">❤️</div><div class="auth-perk-text"><strong>Save creators</strong> to your wishlist</div></div>
+      </div>
+    </div>
+    <div class="auth-left-foot">© 2026 ScriBuz · Hyderabad, India</div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <h1>Welcome back 👋</h1>
+        <p>Log in to your ScriBuz fan account.</p>
+      </div>
+      <div class="auth-form-box">
+        <div class="fmsg" id="login-msg"></div>
+        <form id="login-form">
+          <div class="fg"><label>Email Address</label><input id="l-email" type="email" placeholder="you@email.com" required></div>
+          <div class="fg"><label>Password</label><input id="l-pass" type="password" placeholder="Your password" required></div>
+          <button type="submit" class="btn btn-primary btn-full btn-large">Log in →</button>
+        </form>
+        <div class="fdiv">or</div>
+        <div class="f-foot">New to ScriBuz? <a href="/fan/signup.html">Create an account</a></div>
+        <div class="f-foot" style="margin-top:8px">Creator login? <a href="/creator/auth.html">Click here →</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="/fan/script.js"></script>
+</body>
+</html>

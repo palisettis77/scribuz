@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Browse Creators — ScriBuz</title>
+  <link rel="stylesheet" href="/fan/style.css">
+  <style>
+    .search-wrap{position:relative;max-width:480px;margin:0 auto 28px}
+    .search-inp{width:100%;padding:13px 48px 13px 20px;border-radius:100px;border:2px solid var(--border,#E5E4E0);background:#fff;color:var(--text,#1A1A18);font-size:14px;font-family:inherit;outline:none;transition:.2s}
+    .search-inp:focus{border-color:var(--orange,#D85A30);box-shadow:0 0 0 3px rgba(216,90,48,.08)}
+    .search-clear{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:20px;cursor:pointer;color:#9C9B96;display:none;line-height:1;padding:0}
+    .search-banner{text-align:center;margin-bottom:16px;font-size:14px;color:var(--text2,#5C5B57);display:none}
+  </style>
+</head>
+<body onload="initBrowsePage()">
+<nav>
+  <div class="nav-inner">
+    <a href="/fan/index.html" class="logo"><span class="scri">Scri</span><span class="buz">Buz</span></a>
+    <div class="nav-links">
+      <a href="/fan/browse.html" class="nav-link" style="color:var(--orange)">Browse</a>
+    </div>
+    <div class="nav-actions" id="nav-actions"></div>
+  </div>
+</nav>
+
+<div class="section" style="padding-top:96px">
+  <div class="section-inner">
+    <div class="sec-label">Hyderabad · Phase 1</div>
+    <h1 class="sec-title">Find your creator</h1>
+    <p class="sec-sub" style="margin-bottom:20px">Browse verified creators available for private bookings. Every experience is escrow-protected.</p>
+
+    <div class="search-wrap">
+      <input id="browse-search" class="search-inp" type="text"
+        placeholder="🔍  Search creator by name…"
+        autocomplete="off"
+        oninput="browseFilterSearch(this.value)"
+        onkeydown="if(event.key==='Escape'){this.value='';browseFilterSearch('');}"
+      >
+      <button class="search-clear" id="search-clear"
+        onclick="document.getElementById('browse-search').value='';browseFilterSearch('');">×</button>
+    </div>
+
+    <div class="search-banner" id="search-banner"></div>
+
+    <div class="cat-tabs">
+      <button class="ctab active" data-cat="All">All</button>
+      <button class="ctab" data-cat="Food">🍜 Food</button>
+      <button class="ctab" data-cat="Music">🎵 Music</button>
+      <button class="ctab" data-cat="Fitness">💪 Fitness</button>
+      <button class="ctab" data-cat="Comedy">😂 Comedy</button>
+      <button class="ctab" data-cat="Tech">💻 Tech</button>
+      <button class="ctab" data-cat="Gaming">🎮 Gaming</button>
+      <button class="ctab" data-cat="Art">🎨 Art</button>
+      <button class="ctab" data-cat="Travel">✈️ Travel</button>
+      <button class="ctab" data-cat="Education">📚 Education</button>
+    </div>
+
+    <div class="creators-grid" id="browse-grid">
+      <div class="empty-state"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="wide-section" style="margin-top:40px">
+  <div class="wide-inner" style="text-align:center">
+    <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:10px">Don't see your favourite creator?</h3>
+    <p style="color:var(--text2);margin-bottom:20px;font-size:14px">Request them — if enough fans ask, we'll reach out and bring them on.</p>
+    <a href="mailto:hello@scribuz.in?subject=Creator Request" class="btn btn-primary">Request a Creator</a>
+  </div>
+</div>
+
+<footer id="footer"></footer>
+<div id="toast" class="toast"></div>
+<script src="/fan/script.js"></script>
+<script>
+// ── BROWSE PAGE — search + filter (runs AFTER script.js) ─────────────────────
+// Use window scoped vars to avoid const re-declaration conflict with script.js
+window._bAll  = [];   // all creators cache
+window._bCat  = 'All';
+window._bQ    = '';
+
+async function initBrowsePage() {
+  updateNav();
+  renderFooter();
+
+  const params    = new URLSearchParams(location.search);
+  const urlCat    = params.get('cat')    || 'All';
+  const urlSearch = (params.get('search') || '').trim();
+
+  window._bCat = urlCat;
+  window._bQ   = urlSearch.toLowerCase();
+
+  // Set active category tab
+  document.querySelectorAll('.ctab').forEach(t => {
+    t.classList.toggle('active', t.dataset.cat === urlCat);
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.ctab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      window._bCat = t.dataset.cat;
+      browseRender();
+    });
+  });
+
+  // Pre-fill search from URL param
+  if (urlSearch) {
+    const inp = document.getElementById('browse-search');
+    if (inp) inp.value = urlSearch;
+    document.getElementById('search-clear').style.display = 'block';
+  }
+
+  // Load all creators once and cache
+  document.getElementById('browse-grid').innerHTML =
+    '<div class="empty-state"><div class="spinner"></div>Loading creators…</div>';
+
+  const res = await fetch('http://127.0.0.1:5000/api/creators')
+    .then(r => r.json())
+    .catch(() => ({ creators: [] }));
+
+  window._bAll = res.creators || [];
+  browseRender();
+}
+
+function browseFilterSearch(val) {
+  window._bQ = val.toLowerCase().trim();
+  document.getElementById('search-clear').style.display = window._bQ ? 'block' : 'none';
+  browseRender();
+}
+
+function browseRender() {
+  let list = window._bAll;
+
+  // Category filter
+  if (window._bCat && window._bCat !== 'All') {
+    list = list.filter(c => c.category === window._bCat);
+  }
+
+  // Search filter — name or bio
+  if (window._bQ) {
+    list = list.filter(c =>
+      (c.name || '').toLowerCase().includes(window._bQ) ||
+      (c.bio  || '').toLowerCase().includes(window._bQ)
+    );
+  }
+
+  const grid   = document.getElementById('browse-grid');
+  const banner = document.getElementById('search-banner');
+
+  // Banner
+  if (window._bQ) {
+    banner.style.display = 'block';
+    banner.innerHTML = list.length
+      ? `Found <strong>${list.length}</strong> creator${list.length !== 1 ? 's' : ''} matching "<strong>${window._bQ}</strong>"`
+      : `No creators found for "<strong>${window._bQ}</strong>" &nbsp;·&nbsp; <a href="/fan/browse.html" style="color:var(--orange,#D85A30);font-weight:600">Clear search</a>`;
+  } else {
+    banner.style.display = 'none';
+  }
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="ei">😔</div>
+      ${window._bQ
+        ? `No creators found for "<strong>${window._bQ}</strong>". <a href="/fan/browse.html" style="color:var(--orange,#D85A30)">Clear search</a>`
+        : 'No creators in this category yet.'}
+    </div>`;
+    return;
+  }
+
+  // Use creatorCard from script.js
+  grid.innerHTML = list.map((c, i) => creatorCard(c, i)).join('');
+}
+</script>
+</body>
+</html>

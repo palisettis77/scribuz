@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Join ScriBuz — Sign Up</title>
+  <link rel="stylesheet" href="/fan/style.css">
+</head>
+<body onload="initSignup()">
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-left-glow"></div>
+    <a href="/fan/index.html" class="auth-left-logo">Scri<span class="buz">Buz</span></a>
+    <div class="auth-left-content">
+      <h2>Where subscribers<br>become guests.</h2>
+      <p>Join thousands of fans booking real in-person experiences with the creators they love.</p>
+      <div class="auth-perks">
+        <div class="auth-perk"><div class="auth-perk-icon">🎟</div><div class="auth-perk-text"><strong>Book private experiences</strong> with your favourite creators</div></div>
+        <div class="auth-perk"><div class="auth-perk-icon">🔒</div><div class="auth-perk-text"><strong>Escrow payments</strong> — pay only when creator accepts</div></div>
+        <div class="auth-perk"><div class="auth-perk-icon">💬</div><div class="auth-perk-text"><strong>Chat directly</strong> with creators before every experience</div></div>
+        <div class="auth-perk"><div class="auth-perk-icon">⭐</div><div class="auth-perk-text"><strong>Leave reviews</strong> and help the creator community grow</div></div>
+        <div class="auth-perk"><div class="auth-perk-icon">🎁</div><div class="auth-perk-text"><strong>Earn ₹500</strong> for every friend you refer who books</div></div>
+      </div>
+    </div>
+    <div class="auth-left-foot">© 2026 ScriBuz · Hyderabad, India · hello@scribuz.in</div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <h1>Create your account 🎟</h1>
+        <p>Join ScriBuz free and start booking private experiences today.</p>
+      </div>
+      <div class="auth-form-box">
+        <div class="fmsg" id="signup-msg"></div>
+        <form id="signup-form">
+          <div class="fg"><label>Full Name *</label><input id="s-name" type="text" placeholder="Your full name" required></div>
+          <div class="frow">
+            <div class="fg"><label>Email *</label><input id="s-email" type="email" placeholder="you@email.com" required></div>
+            <div class="fg"><label>City</label><input id="s-city" type="text" placeholder="Hyderabad"></div>
+          </div>
+          <div class="fg"><label>WhatsApp Number</label><input id="s-phone" type="tel" placeholder="+91 98765 43210"></div>
+          <div class="fg"><label>Password *</label><input id="s-pass" type="password" placeholder="Min. 6 characters" required minlength="6"></div>
+          <button type="submit" class="btn btn-primary btn-full btn-large" style="margin-top:4px">Create my account →</button>
+        </form>
+        <div class="fdiv">or</div>
+        <div class="f-foot">Already have an account? <a href="/fan/login.html">Log in here</a></div>
+      </div>
+      <div style="margin-top:16px;text-align:center;font-size:12px;color:var(--text3)">
+        By signing up you agree to our <a href="/fan/terms.html" style="color:var(--orange)">Terms</a> and <a href="/fan/privacy.html" style="color:var(--orange)">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="/fan/script.js"></script>
+</body>
+</html>

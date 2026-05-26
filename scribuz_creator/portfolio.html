@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Portfolio — ScriBuz</title>
+  <link rel="stylesheet" href="/creator/style.css">
+  <style>
+    .port-wrap{max-width:1100px;margin:0 auto;padding:24px 2rem 60px}
+    .port-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+    .gallery-item{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;transition:.2s;position:relative;group}
+    .gallery-item:hover{border-color:var(--or);box-shadow:0 8px 24px rgba(0,0,0,.1);transform:translateY(-2px)}
+    .gallery-img{width:100%;height:180px;object-fit:cover;display:block;background:var(--bg3)}
+    .gallery-img-placeholder{width:100%;height:180px;background:linear-gradient(135deg,var(--bg3),var(--bd));display:flex;align-items:center;justify-content:center;font-size:2rem}
+    .gallery-body{padding:13px}
+    .gallery-caption{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:4px}
+    .gallery-date{font-size:11px;color:var(--tx3)}
+    .gallery-actions{display:flex;gap:6px;margin-top:10px}
+    .add-card{border:2px dashed var(--bd);border-radius:var(--rl);padding:32px 20px;text-align:center;cursor:pointer;transition:.2s;background:#fff}
+    .add-card:hover{border-color:var(--or);background:#FAECE7}
+    .add-card-icon{font-size:2.5rem;margin-bottom:10px}
+    .add-card h3{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:5px}
+    .add-card p{font-size:12px;color:var(--tx2)}
+    .add-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:999;padding:16px}
+    .add-modal.open{display:flex}
+    .add-modal-box{background:#fff;border-radius:var(--rl);width:100%;max-width:480px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+    .add-modal-box h3{font-size:1.1rem;font-weight:700;margin-bottom:18px}
+    .type-btns{display:flex;gap:8px;margin-bottom:18px}
+    .type-btn{flex:1;padding:12px;border-radius:var(--r);border:1.5px solid var(--bd);text-align:center;cursor:pointer;transition:.2s;font-family:inherit;font-size:13px;font-weight:600;background:#fff}
+    .type-btn.active{border-color:var(--or);background:#FAECE7;color:var(--or)}
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+    .lightbox.open{display:flex}
+    .lightbox img{max-width:90vw;max-height:85vh;border-radius:var(--r);object-fit:contain}
+    .lightbox-close{position:absolute;top:20px;right:24px;font-size:28px;color:#fff;cursor:pointer;line-height:1;background:none;border:none}
+    .video-embed{width:100%;height:180px;border:none;border-radius:0}
+    .badge-shelf{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+    .creator-badge{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700}
+    .badge-bronze{background:#FFF0E0;border:1px solid #CD7F32;color:#7B4F1E}
+    .badge-silver{background:#F4F4F4;border:1px solid #A8A9AD;color:#5A5A5A}
+    .badge-gold{background:#FFF8E0;border:1px solid #FFD700;color:#8B6914}
+    @media(max-width:600px){.gallery{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+<nav class="cnav">
+  <div class="cnav-inner">
+    <div style="display:flex;align-items:center">
+      <a href="/creator/dashboard.html" class="cnav-logo">Scri<span>Buz</span></a>
+      <span class="cnav-badge">Portfolio</span>
+    </div>
+    <div class="cnav-right">
+      <a href="/creator/dashboard.html" style="font-size:13px;color:rgba(255,255,255,.5)">← Dashboard</a>
+      <button class="btn-logout" onclick="doLogout()">Log out →</button>
+    </div>
+  </div>
+</nav>
+
+<div class="port-wrap">
+  <div class="port-header">
+    <div>
+      <h1 style="font-size:1.4rem;font-weight:700;letter-spacing:-.5px">🎨 My Portfolio</h1>
+      <p style="font-size:13px;color:var(--tx2);margin-top:4px">Showcase your best experiences to attract more fans</p>
+    </div>
+    <button class="btn btn-primary" onclick="openAddModal()">+ Add photo / video</button>
+  </div>
+
+  <!-- BADGES -->
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-head"><h3>🏅 Creator Badges</h3></div>
+    <div style="padding:16px 18px">
+      <div class="badge-shelf" id="badge-shelf">
+        <div style="font-size:13px;color:var(--tx2)">Loading your badges…</div>
+      </div>
+      <p style="font-size:12px;color:var(--tx3)">Badges are automatically awarded based on your completed events and ratings.</p>
+    </div>
+  </div>
+
+  <!-- GALLERY -->
+  <div class="gallery" id="gallery">
+    <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--tx3)"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="add-modal" id="add-modal">
+  <div class="add-modal-box">
+    <h3>➕ Add to portfolio</h3>
+    <div class="type-btns">
+      <button class="type-btn active" onclick="setType('photo',this)">📷 Photo</button>
+      <button class="type-btn" onclick="setType('video',this)">🎥 YouTube</button>
+    </div>
+    <div class="pg" id="url-group">
+      <label id="url-label">Image URL</label>
+      <input type="url" id="add-url" placeholder="https://your-image-url.jpg">
+    </div>
+    <div class="pg">
+      <label>Caption</label>
+      <input type="text" id="add-caption" placeholder="e.g. Cooking masterclass with Meghana">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeAddModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:2" onclick="addItem()">Add to portfolio →</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">×</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<div id="toast" class="toast"></div>
+<script>
+const API = 'http://127.0.0.1:5000';
+const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
+let addType = 'photo';
+let portfolioItems = [];
+
+function getSession() {
+  const token = localStorage.getItem('sc_token');
+  const creator = localStorage.getItem('sc_creator');
+  if (!token || !creator) return null;
+  try { return { token, creator: JSON.parse(creator) }; } catch { return null; }
+}
+function doLogout() {
+  localStorage.removeItem('sc_token'); localStorage.removeItem('sc_creator');
+  window.location.href = '/creator/auth.html';
+}
+function showToast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className='toast'+(err?' err':''); t.style.display='block';
+  setTimeout(()=>t.style.display='none',3000);
+}
+
+function setType(type, btn) {
+  addType = type;
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('url-label').textContent = type==='photo' ? 'Image URL' : 'YouTube video URL';
+  document.getElementById('add-url').placeholder = type==='photo'
+    ? 'https://your-image-url.jpg'
+    : 'https://youtube.com/watch?v=...';
+}
+
+function openAddModal() { document.getElementById('add-modal').classList.add('open'); }
+function closeAddModal() {
+  document.getElementById('add-modal').classList.remove('open');
+  document.getElementById('add-url').value = '';
+  document.getElementById('add-caption').value = '';
+}
+
+async function addItem() {
+  const url     = document.getElementById('add-url').value.trim();
+  const caption = document.getElementById('add-caption').value.trim();
+  if (!url) { showToast('Enter a URL first.', true); return; }
+  const s = getSession();
+  const res = await fetch(`${API}/api/creator/images`, {
+    method: 'POST',
+    headers: {'Authorization':`Bearer ${s.token}`,'Content-Type':'application/json'},
+    body: JSON.stringify({ image_url: url, caption, media_type: addType })
+  }).then(r=>r.json()).catch(()=>({success:false,message:'Error'}));
+  showToast(res.success ? 'Added to portfolio!' : res.message, !res.success);
+  if (res.success) { closeAddModal(); loadPortfolio(); }
+}
+
+async function deleteItem(id) {
+  if (!confirm('Remove this item from your portfolio?')) return;
+  const s = getSession();
+  await fetch(`${API}/api/creator/images/${id}`, {
+    method: 'DELETE', headers: {'Authorization':`Bearer ${s.token}`}
+  });
+  showToast('Removed.');
+  loadPortfolio();
+}
+
+function openLightbox(url) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
+function getYTEmbed(url) {
+  const m = url.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+  return m ? `https://www.youtube.com/embed/${m[1]}` : null;
+}
+
+async function loadPortfolio() {
+  const s = getSession();
+  if (!s) { window.location.href='/creator/auth.html'; return; }
+
+  // Load images
+  const res = await fetch(`${API}/api/creators/${s.creator.id}/images`)
+    .then(r=>r.json()).catch(()=>({images:[]}));
+  portfolioItems = res.images || [];
+
+  // Load stats for badges
+  const prof = await fetch(`${API}/api/creator/profile`, {
+    headers: {'Authorization':`Bearer ${s.token}`}
+  }).then(r=>r.json()).catch(()=>({success:false}));
+
+  renderBadges(prof.creator || {});
+  renderGallery();
+}
+
+function renderBadges(c) {
+  const events = c.total_events || 0;
+  const rating = c.rating || 0;
+  const shelf  = document.getElementById('badge-shelf');
+  const badges = [];
+
+  if (events >= 1)  badges.push({cls:'badge-bronze',icon:'🥉',label:'Bronze Creator',desc:'1+ event'});
+  if (events >= 10) badges.push({cls:'badge-silver',icon:'🥈',label:'Silver Creator',desc:'10+ events'});
+  if (events >= 50 && rating >= 4.5) badges.push({cls:'badge-gold',icon:'🥇',label:'Gold Creator',desc:'50+ events · 4.5★'});
+  if (events === 0) badges.push({cls:'badge-bronze',icon:'🌱',label:'Getting started',desc:'Complete your first event'});
+
+  shelf.innerHTML = badges.map(b => `
+    <div class="creator-badge ${b.cls}">
+      ${b.icon} ${b.label}
+      <span style="font-weight:400;opacity:.7;font-size:11px;margin-left:4px">· ${b.desc}</span>
+    </div>`).join('');
+}
+
+function renderGallery() {
+  const gallery = document.getElementById('gallery');
+  const items = portfolioItems.map(item => {
+    const ytEmbed = item.media_type === 'video' ? getYTEmbed(item.image_url) : null;
+    return `<div class="gallery-item">
+      ${ytEmbed
+        ? `<iframe class="video-embed" src="${ytEmbed}" allowfullscreen></iframe>`
+        : item.image_url
+          ? `<img class="gallery-img" src="${item.image_url}" alt="${item.caption||''}" onclick="openLightbox('${item.image_url}')" style="cursor:zoom-in" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+          : ''
+      }
+      ${!ytEmbed ? `<div class="gallery-img-placeholder" style="display:none">🖼️</div>` : ''}
+      <div class="gallery-body">
+        <div class="gallery-caption">${item.caption || 'Untitled'}</div>
+        <div class="gallery-date">${item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : ''}</div>
+        <div class="gallery-actions">
+          <button class="kc-btn" onclick="deleteItem(${item.id})">🗑 Remove</button>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  // Add card
+  items.push(`<div class="add-card" onclick="openAddModal()">
+    <div class="add-card-icon">➕</div>
+    <h3>Add photo or video</h3>
+    <p>Paste an image URL or YouTube link</p>
+  </div>`);
+
+  gallery.innerHTML = items.join('');
+}
+
+loadPortfolio();
+</script>
+</body>
+</html>

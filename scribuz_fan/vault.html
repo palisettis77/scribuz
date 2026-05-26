@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Memory Vault — ScriBuz</title>
+  <link rel="stylesheet" href="/fan/style.css">
+  <style>
+    .vault-wrap{max-width:960px;margin:0 auto;padding:24px 1.5rem 60px}
+    .vault-hero{background:linear-gradient(135deg,#1A1A18,#2a2a26);border-radius:20px;padding:32px;margin-bottom:24px;color:#fff;text-align:center;position:relative;overflow:hidden}
+    .vh-glow{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:300px;height:200px;background:radial-gradient(ellipse,rgba(216,90,48,.2),transparent 70%);pointer-events:none}
+    .vault-hero h1{font-size:1.8rem;font-weight:700;letter-spacing:-.75px;margin-bottom:8px;position:relative}
+    .vault-hero p{font-size:13px;color:rgba(255,255,255,.5);position:relative}
+    .exp-selector{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+    .exp-btn{background:#fff;border:1.5px solid var(--bd,#E5E4E0);border-radius:var(--rl,14px);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:.2s;font-family:inherit;text-align:left}
+    .exp-btn:hover,.exp-btn.active{border-color:#D85A30;background:#FAECE7}
+    .exp-btn-left{display:flex;align-items:center;gap:12px}
+    .exp-icon{width:42px;height:42px;border-radius:10px;background:#FAECE7;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .exp-name{font-size:14px;font-weight:700;color:#1A1A18;margin-bottom:2px}
+    .exp-date{font-size:12px;color:#5C5B57}
+    .exp-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#EAF3DE;color:#27500A;border:1px solid #97C459}
+    .vault-content{display:none}
+    .vault-content.open{display:block}
+    .vault-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+    .vault-photo{border-radius:var(--r,10px);overflow:hidden;aspect-ratio:1;position:relative;cursor:zoom-in;background:var(--bg3,#F3F2EF)}
+    .vault-photo img{width:100%;height:100%;object-fit:cover;transition:.3s}
+    .vault-photo:hover img{transform:scale(1.05)}
+    .vault-photo-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.5),transparent);opacity:0;transition:.2s;display:flex;align-items:flex-end;padding:10px}
+    .vault-photo:hover .vault-photo-overlay{opacity:1}
+    .vpo-label{font-size:11px;color:#fff;font-weight:600}
+    .vault-photo-placeholder{width:100%;aspect-ratio:1;background:var(--bg3,#F3F2EF);border-radius:var(--r,10px);border:2px dashed var(--bd,#E5E4E0);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.2s}
+    .vault-photo-placeholder:hover{border-color:#D85A30;background:#FAECE7}
+    .upload-area{background:#fff;border:1.5px solid var(--bd,#E5E4E0);border-radius:var(--rl,14px);padding:20px;margin-top:16px}
+    .upload-area h4{font-size:14px;font-weight:700;margin-bottom:12px}
+    .upload-row{display:flex;gap:8px}
+    .upload-inp{flex:1;padding:10px 13px;border-radius:var(--r,10px);border:1.5px solid var(--bd,#E5E4E0);font-size:13px;font-family:inherit;outline:none;transition:.2s}
+    .upload-inp:focus{border-color:#D85A30}
+    .upload-btn{padding:10px 18px;background:#D85A30;color:#fff;border:none;border-radius:var(--r,10px);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+    .upload-btn:hover{background:#993C1D}
+    .locked-overlay{text-align:center;padding:48px 20px;color:var(--tx2,#5C5B57)}
+    .locked-overlay .lock-icon{font-size:3rem;margin-bottom:12px}
+    .locked-overlay h3{font-size:1.1rem;font-weight:700;color:#1A1A18;margin-bottom:8px}
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+    .lightbox.open{display:flex}
+    .lightbox img{max-width:90vw;max-height:85vh;border-radius:10px;object-fit:contain}
+    .lightbox-close{position:absolute;top:20px;right:24px;font-size:28px;color:#fff;cursor:pointer;background:none;border:none}
+  </style>
+</head>
+<body>
+
+<nav style="background:#1A1A18;padding:0 2rem;position:sticky;top:0;z-index:100">
+  <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px">
+    <a href="/fan/index.html" style="font-size:18px;font-weight:700;color:#fff;text-decoration:none">Scri<span style="background:linear-gradient(135deg,#D85A30,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Buz</span></a>
+    <a href="/fan/account.html" style="font-size:13px;color:rgba(255,255,255,.5);text-decoration:none">← My account</a>
+  </div>
+</nav>
+
+<div class="vault-wrap">
+  <div class="vault-hero">
+    <div class="vh-glow"></div>
+    <div style="font-size:3rem;margin-bottom:12px;position:relative">🔒</div>
+    <h1>Memory Vault</h1>
+    <p>A private, shared photo album unlocked after your experience is complete. Upload memories and relive every moment.</p>
+  </div>
+
+  <div id="bookings-section">
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--tx,#1A1A18)">📅 Your completed experiences</h3>
+    <div id="exp-list"><div class="empty" style="padding:32px;text-align:center;color:#9C9B96"><div style="width:28px;height:28px;border:2.5px solid #E5E4E0;border-top-color:#D85A30;border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 12px"></div>Loading…</div></div>
+  </div>
+
+  <div class="vault-content" id="vault-content">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:24px 0 14px">
+      <h3 style="font-size:14px;font-weight:700;color:var(--tx,#1A1A18)" id="vault-title">📸 Photos</h3>
+      <button style="font-size:12px;font-weight:600;color:#D85A30;background:#FAECE7;border:1px solid #F0997B;padding:5px 12px;border-radius:20px;cursor:pointer;font-family:inherit" onclick="document.getElementById('upload-area').scrollIntoView({behavior:'smooth'})">+ Add photo</button>
+    </div>
+    <div class="vault-grid" id="vault-grid"></div>
+    <div class="upload-area" id="upload-area">
+      <h4>📷 Add a memory</h4>
+      <p style="font-size:12px;color:var(--tx2,#5C5B57);margin-bottom:12px">Paste an image URL to add it to this memory vault</p>
+      <div class="upload-row">
+        <input class="upload-inp" id="photo-url" placeholder="https://your-photo-url.jpg" type="url">
+        <button class="upload-btn" onclick="addPhoto()">Add →</button>
+      </div>
+      <div id="upload-msg" style="font-size:12px;margin-top:8px;display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">×</button>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<script>
+const API = 'http://127.0.0.1:5000';
+const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
+let activeBookingId = null;
+let vaultData = {}; // stored locally keyed by booking_id
+
+function getSession() {
+  const token = localStorage.getItem('sc_token');
+  const user  = localStorage.getItem('sc_user');
+  if (!token || !user) return null;
+  try { return { token, user: JSON.parse(user) }; } catch { return null; }
+}
+
+function loadVaultData() {
+  try { vaultData = JSON.parse(localStorage.getItem('vault_data')||'{}'); } catch { vaultData={}; }
+}
+function saveVaultData() {
+  localStorage.setItem('vault_data', JSON.stringify(vaultData));
+}
+
+async function loadExperiences() {
+  const s = getSession();
+  if (!s) { window.location.href='/fan/login.html'; return; }
+  loadVaultData();
+
+  const res = await fetch(`${API}/api/fan/bookings`, {
+    headers: {'Authorization':`Bearer ${s.token}`}
+  }).then(r=>r.json()).catch(()=>({bookings:[]}));
+
+  const completed = (res.bookings||[]).filter(b=>b.status==='completed');
+  const list      = document.getElementById('exp-list');
+
+  if (!completed.length) {
+    list.innerHTML = '<div class="locked-overlay"><div class="lock-icon">🔒</div><h3>No completed experiences yet</h3><p>Memory vaults unlock after your experience is marked complete by the creator.</p></div>';
+    return;
+  }
+
+  list.innerHTML = completed.map(b => {
+    const dt = b.event_date
+      ? new Date(b.event_date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})
+      : new Date(b.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+    const photoCount = (vaultData[b.id]||[]).length;
+    return `<button class="exp-btn" onclick="openVault(${b.id},'${(b.event_type||'Experience').replace(/'/g,"\\'")}','${(b.creator_name||'Creator').replace(/'/g,"\\'")}')">
+      <div class="exp-btn-left">
+        <div class="exp-icon">🎉</div>
+        <div>
+          <div class="exp-name">${b.event_type||'Experience'} · ${b.creator_name||'Creator'}</div>
+          <div class="exp-date">📅 ${dt}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        ${photoCount>0?`<span class="exp-badge">${photoCount} photo${photoCount>1?'s':''}</span>`:''}
+        <span style="color:var(--tx3,#9C9B96);font-size:18px">›</span>
+      </div>
+    </button>`;
+  }).join('');
+}
+
+function openVault(bookingId, type, creator) {
+  activeBookingId = bookingId;
+  document.querySelectorAll('.exp-btn').forEach(b=>b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('vault-title').textContent = `📸 ${type} · ${creator}`;
+  document.getElementById('vault-content').classList.add('open');
+  renderVault();
+  document.getElementById('vault-content').scrollIntoView({behavior:'smooth'});
+}
+
+function renderVault() {
+  const photos = vaultData[activeBookingId] || [];
+  const grid   = document.getElementById('vault-grid');
+  grid.innerHTML = photos.map((p,i) => `
+    <div class="vault-photo" onclick="openLightbox('${p.url}')">
+      <img src="${p.url}" alt="Memory ${i+1}" onerror="this.parentElement.style.display='none'">
+      <div class="vault-photo-overlay"><span class="vpo-label">${p.caption||'Memory '+(i+1)}</span></div>
+    </div>`).join('') +
+    `<div class="vault-photo-placeholder" onclick="document.getElementById('photo-url').focus()">
+      <div style="font-size:2rem;margin-bottom:8px">📷</div>
+      <div style="font-size:12px;color:var(--tx2,#5C5B57);font-weight:600">Add photo</div>
+    </div>`;
+}
+
+function addPhoto() {
+  const url = document.getElementById('photo-url').value.trim();
+  const msg = document.getElementById('upload-msg');
+  if (!url) { msg.style.display='block'; msg.textContent='Paste an image URL.'; msg.style.color='#A32D2D'; return; }
+  if (!activeBookingId) return;
+  vaultData[activeBookingId] = vaultData[activeBookingId] || [];
+  vaultData[activeBookingId].unshift({ url, caption: '', addedAt: new Date().toISOString() });
+  saveVaultData();
+  document.getElementById('photo-url').value = '';
+  msg.style.display='block'; msg.textContent='✅ Photo added to your vault!'; msg.style.color='#27500A';
+  setTimeout(()=>msg.style.display='none',3000);
+  renderVault();
+  loadExperiences(); // refresh photo counts
+}
+
+function openLightbox(url) {
+  document.getElementById('lb-img').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
+loadExperiences();
+</script>
+</body>
+</html>
