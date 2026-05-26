@@ -2,5 +2,10 @@
 __pycache__/
 *.pyc
 venv/
-*.egg-info/
+Microsoft VS Code/
+*.bin
+*.exe
+*.dll
+*.dat
+*.msg
 .DS_Store
